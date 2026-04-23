@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BABCOM GRC Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f17;--bg2:#131620;--bg3:#1a1d2e;--card:#1e2235;
+  --border:#2a2f4a;--border2:#3a3f5c;
+  --text:#e8eaf6;--text2:#9da3c8;--text3:#5c6285;
+  --green:#4ade80;--green-bg:#0d2b1a;
+  --amber:#fbbf24;--amber-bg:#2b1f08;
+  --red:#f87171;--red-bg:#2b0d0d;
+  --blue:#60a5fa;--blue-bg:#0d1f3b;
+  --purple:#a78bfa;--purple-bg:#1a1240;
+  --radius:10px;--radius-sm:6px;
+  --font:'Inter',system-ui,sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+#root{display:flex;flex-direction:column;min-height:100vh}
+
+/* Nav */
+.nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:32px;position:sticky;top:0;z-index:100}
+.nav-logo{font-size:16px;font-weight:700;color:#fff;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.nav-logo span{color:var(--blue)}
+.nav-links{display:flex;gap:4px;margin-left:auto;align-items:center}
+.nav-link{padding:6px 14px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;color:var(--text2);border:none;background:none;transition:all .15s}
+.nav-link:hover{background:var(--bg3);color:var(--text)}
+.nav-link.active{background:var(--blue-bg);color:var(--blue)}
+.nav-badge{background:var(--green-bg);color:var(--green);font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px}
+
+/* Layout */
+.main{flex:1;padding:24px;max-width:1200px;margin:0 auto;width:100%}
+.page-title{font-size:22px;font-weight:600;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card-sm{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+
+/* Grid */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}}
+
+/* KPI card */
+.kpi{text-align:center}
+.kpi-val{font-size:32px;font-weight:700;margin:6px 0 2px}
+.kpi-label{font-size:12px;color:var(--text2)}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.4px}
+.badge-pass{background:var(--green-bg);color:var(--green)}
+.badge-partial{background:var(--amber-bg);color:var(--amber)}
+.badge-fail{background:var(--red-bg);color:var(--red)}
+.badge-missing{background:var(--bg3);color:var(--text2)}
+.badge-info{background:var(--blue-bg);color:var(--blue)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+
+/* Table */
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{padding:8px 12px;text-align:left;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:var(--bg3)}
+
+/* Score bar */
+.score-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:6px}
+.score-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* Buttons */
+.btn{padding:8px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{background:none;border:1px solid var(--border2);color:var(--text)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;color:var(--text);font-size:13px;outline:none;transition:border .15s}
+.form-input:focus{border-color:var(--blue)}
+
+/* Progress log */
+.progress-log{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-family:monospace;font-size:12px;max-height:180px;overflow-y:auto}
+.log-line{color:var(--text2);line-height:1.7}
+.log-line.ok{color:var(--green)}
+.log-line.err{color:var(--red)}
+
+/* Expander */
+.expander{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px}
+.exp-header{padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:var(--bg3);font-size:13px}
+.exp-header:hover{background:var(--bg2)}
+.exp-body{padding:16px;border-top:1px solid var(--border);background:var(--card)}
+.exp-arrow{transition:transform .2s;font-size:11px;color:var(--text3)}
+.exp-arrow.open{transform:rotate(180deg)}
+
+/* Check rows */
+.check-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.check-row:last-child{border-bottom:none}
+.check-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px}
+.check-ok{background:var(--green-bg);color:var(--green)}
+.check-fail{background:var(--red-bg);color:var(--red)}
+
+/* Framework tabs */
+.fw-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.fw-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .15s}
+.fw-tab.active{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+
+/* Pill */
+.pill{padding:2px 8px;border-radius:20px;font-size:11px;background:var(--bg3);color:var(--text2);display:inline-block}
+
+/* Logo */
+.logo-img {
+  width: 120px;      /* adjust as needed */
+  height: 40px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+/* Pulse dot */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pulse{animation:pulse 1.5s infinite;display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-size:16px;color:var(--text2);margin-bottom:6px}
+
+/* Source chips */
+.source-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);margin:3px}
+.source-chip .dot{width:6px;height:6px;border-radius:50%}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {useState, useEffect, useCallback, useRef} = React;
+const API = 'http://localhost:8000';
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+async function apiFetch(path, opts={}) {
+  try {
+    const r = await fetch(API + path, opts);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch(e) { console.error(path, e); return null; }
+}
+
+// ── Hooks ─────────────────────────────────────────────────────────────────────
+function useReport() {
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState([]);
+  const [running, setRunning] = useState(false);
+  const pollRef = useRef(null);
+
+  const startAssessment = useCallback(async (config) => {
+    setRunning(true); setProgress([]);
+    await apiFetch('/api/run', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(config)
+    });
+    pollRef.current = setInterval(async () => {
+      const status = await apiFetch('/api/status');
+      if (!status) return;
+      setProgress(status.progress || []);
+      if (!status.running) {
+        clearInterval(pollRef.current);
+        setRunning(false);
+        if (status.has_report) {
+          setLoading(true);
+          const r = await apiFetch('/api/report');
+          setReport(r); setLoading(false);
+        }
+      }
+    }, 800);
+  }, []);
+
+  useEffect(() => () => clearInterval(pollRef.current), []);
+  return {report, loading, running, progress, startAssessment};
+}
+
+// ── Components ────────────────────────────────────────────────────────────────
+function StatusBadge({status}) {
+  const cls = {pass:'badge-pass',partial:'badge-partial',fail:'badge-fail',missing:'badge-missing',not_applicable:'badge-info'}[status]||'badge-missing';
+  return React.createElement('span',{className:`badge ${cls}`},status?.toUpperCase());
+}
+
+function ScoreBar({score, color}) {
+  const col = score>=90?'#4ade80':score>=70?'#fbbf24':score>=50?'#f97316':'#f87171';
+  return React.createElement('div',{className:'score-bar'},
+    React.createElement('div',{className:'score-fill',style:{width:`${score}%`,background:col}})
+  );
+}
+
+function Expander({title, subtitle, badge, children, defaultOpen=false}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return React.createElement('div',{className:'expander'},
+    React.createElement('div',{className:'exp-header',onClick:()=>setOpen(!open)},
+      React.createElement('div',{style:{display:'flex',alignItems:'center',gap:10}},
+        badge, React.createElement('span',{style:{fontWeight:500}},title),
+        subtitle && React.createElement('span',{style:{color:'var(--text3)',fontSize:12}},subtitle)
+      ),
+      React.createElement('span',{className:`exp-arrow${open?' open':''}`},'▾')
+    ),
+    open && React.createElement('div',{className:'exp-body'},children)
+  );
+}
+
+function CheckRow({check}) {
+  return React.createElement('div',{className:'check-row'},
+    React.createElement('div',{className:`check-icon ${check.passed?'check-ok':'check-fail'}`},check.passed?'✓':'✗'),
+    React.createElement('div',{},
+      React.createElement('div',{style:{fontWeight:500}},check.description),
+      React.createElement('div',{style:{color:'var(--text3)',fontSize:12,marginTop:2}},
+        `Expected: ${check.expected||'—'} · Actual: ${check.actual||'—'}`,
+        check.detail && React.createElement('span',{style:{color:'var(--amber)',marginLeft:6}},check.detail)
+      )
+    )
+  );
+}
+
+// ── Run Panel ─────────────────────────────────────────────────────────────────
+function RunPanel({onRun, running, progress}) {
+  const [cfg, setCfg] = useState({
+    github_repo:'adarshray416/GRC',
+    github_token:'',
+    local_path:'D:/files/backend/evidence_store/evidence',
+    controls_frameworks:['ISO27001','SOC2','GDPR']
+  });
+  const fws = ['ISO27001','SOC2','GDPR'];
+  const toggleFw = fw => setCfg(c=>({...c,controls_frameworks:
+    c.controls_frameworks.includes(fw)?c.controls_frameworks.filter(f=>f!==fw):[...c.controls_frameworks,fw]}));
+
+  return React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,alignItems:'start'}},
+    React.createElement('div',{className:'card'},
+      React.createElement('div',{className:'section-title'},'Evidence Sources'),
+      React.createElement('div',{className:'form-group'},
+        React.createElement('label',{className:'form-label'},'GitHub Repository'),
+        React.createElement('input',{className:'form-input',value:cfg.github_repo,
+          onChange:e=>setCfg(c=>({...c,github_repo:e.target.value})),placeholder:'owner/repo'})
+      ),
+      React.createElement('div',{className:'form-group'},
+        React.createElement('label',{className:'form-label'},'GitHub Token (optional — for private repos)'),
+        React.createElement('input',{className:'form-input',type:'password',value:cfg.github_token,
+          onChange:e=>setCfg(c=>({...c,github_token:e.target.value})),placeholder:'ghp_...'})
+      ),
+      React.createElement('div',{className:'form-group'},
+        React.createElement('label',{className:'form-label'},'Local Evidence Path'),
+        React.createElement('input',{className:'form-input',value:cfg.local_path,
+          onChange:e=>setCfg(c=>({...c,local_path:e.target.value})),placeholder:'D:\\Babcom\\GRC'})
+      ),
+      React.createElement('div',{className:'form-group'},
+        React.createElement('label',{className:'form-label'},'Frameworks'),
+        React.createElement('div',{style:{display:'flex',gap:8}},
+          fws.map(fw=>React.createElement('button',{key:fw,
+            className:`fw-tab${cfg.controls_frameworks.includes(fw)?' active':''}`,
+            onClick:()=>toggleFw(fw)},fw))
+        )
+      ),
+      React.createElement('button',{className:'btn btn-primary',style:{width:'100%'},
+        disabled:running,onClick:()=>onRun(cfg)},
+        running?React.createElement('span',null,React.createElement('span',{className:'pulse'}),'Running…'):'▶ Run Assessment')
+    ),
+    React.createElement('div',{className:'card'},
+      React.createElement('div',{className:'section-title'},'Pipeline Log'),
+      React.createElement('div',{className:'progress-log'},
+        progress.length===0
+          ? React.createElement('div',{className:'log-line',style:{color:'var(--text3)'}},
+              'Waiting to start…')
+          : progress.map((l,i)=>React.createElement('div',{key:i,
+              className:`log-line${l.includes('error')||l.includes('Error')?' err':l.includes('✓')||l.includes('complete')?' ok':''}`},
+              `› ${l}`))
+      )
+    )
+  );
+}
+
+// ── Dashboard Page ─────────────────────────────────────────────────────────────
+function Dashboard({report}) {
+  if (!report) return React.createElement('div',{className:'empty'},
+    React.createElement('div',{className:'empty-icon'},'🛡️'),
+    React.createElement('div',{className:'empty-title'},'No assessment data'),
+    React.createElement('div',null,'Configure sources and run an assessment to see results.')
+  );
+
+  const s = report.summary;
+  const controls = report.controls || [];
+  const byFw = s.by_framework || {};
+
+  const riskColor = {Low:'var(--green)',Medium:'var(--amber)',High:'var(--red)',Critical:'var(--red)'}[s.risk_level]||'var(--text2)';
+
+  return React.createElement('div',{},
+    // KPI row
+    React.createElement('div',{className:'grid-4',style:{marginBottom:20}},
+      [{label:'Compliance Score',val:`${s.overall_score}%`,sub:'Overall',color:s.overall_score>=90?'var(--green)':s.overall_score>=70?'var(--amber)':'var(--red)'},
+       {label:'Risk Level',val:s.risk_level,sub:'Current exposure',color:riskColor},
+       {label:'Controls Passed',val:s.pass||0,sub:`of ${s.total_controls} total`,color:'var(--green)'},
+       {label:'Issues Found',val:(s.fail||0)+(s.partial||0),sub:`${s.missing||0} missing evidence`,color:'var(--amber)'},
+      ].map(k=>React.createElement('div',{key:k.label,className:'card kpi'},
+        React.createElement('div',{className:'kpi-label'},k.label),
+        React.createElement('div',{className:'kpi-val',style:{color:k.color}},k.val),
+        React.createElement('div',{className:'kpi-sub'},k.sub)
+      ))
+    ),
+
+    // Score bar
+    React.createElement('div',{className:'card',style:{marginBottom:20}},
+      React.createElement('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:8}},
+        React.createElement('span',{style:{fontSize:13,fontWeight:500}},'Overall compliance score'),
+        React.createElement('span',{style:{fontSize:13,fontWeight:700}},`${s.overall_score}%`)
+      ),
+      React.createElement(ScoreBar,{score:s.overall_score})
+    ),
+
+    // Per-framework breakdown
+    React.createElement('div',{className:'section-title'},'Framework Breakdown'),
+    React.createElement('div',{className:'grid-3',style:{marginBottom:20}},
+      Object.entries(byFw).map(([fw,d])=>React.createElement('div',{key:fw,className:'card'},
+        React.createElement('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:8}},
+          React.createElement('span',{style:{fontWeight:600}},fw),
+          React.createElement('span',{style:{fontSize:13,color:d.score>=80?'var(--green)':d.score>=60?'var(--amber)':'var(--red)',fontWeight:700}},`${d.score}%`)
+        ),
+        React.createElement(ScoreBar,{score:d.score}),
+        React.createElement('div',{style:{display:'flex',gap:8,marginTop:10,flexWrap:'wrap'}},
+          ['pass','partial','fail','missing'].map(st=>d[st]>0&&React.createElement('span',{key:st,className:`badge badge-${st}`},`${d[st]} ${st}`))
+        )
+      ))
+    ),
+
+    // Controls summary table
+    React.createElement('div',{className:'card'},
+      React.createElement('div',{className:'section-title'},'Control Status'),
+      React.createElement('table',{className:'table'},
+        React.createElement('thead',null,React.createElement('tr',null,
+          ['Control ID','Name','Framework','Status','Score','Checks'].map(h=>React.createElement('th',{key:h},h))
+        )),
+        React.createElement('tbody',null,
+          controls.map(c=>React.createElement('tr',{key:c.control_id},
+            React.createElement('td',null,React.createElement('code',{style:{fontSize:11,color:'var(--blue)'}},c.control_id)),
+            React.createElement('td',null,c.control_name),
+            React.createElement('td',null,React.createElement('span',{className:'pill'},c.framework)),
+            React.createElement('td',null,React.createElement(StatusBadge,{status:c.status})),
+            React.createElement('td',null,
+              React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8}},
+                React.createElement('span',{style:{fontWeight:600,minWidth:36}},`${c.score}%`),
+                React.createElement('div',{style:{flex:1,height:4,background:'var(--bg3)',borderRadius:2}},
+                  React.createElement('div',{style:{width:`${c.score}%`,height:'100%',background:c.score>=90?'var(--green)':c.score>=60?'var(--amber)':'var(--red)',borderRadius:2}})
+                )
+              )
+            ),
+            React.createElement('td',null,`${c.passed_checks}/${c.total_checks}`)
+          ))
+        )
+      )
+    )
+  );
+}
+
+// ── Controls Page ─────────────────────────────────────────────────────────────
+function Controls({report}) {
+  const [fw, setFw] = useState('ALL');
+  const [statusF, setStatusF] = useState('ALL');
+  if (!report) return React.createElement('div',{className:'empty'},
+    React.createElement('div',{className:'empty-icon'},'🔍'),
+    React.createElement('div',{className:'empty-title'},'Run an assessment first'));
+
+  const controls = report.controls || [];
+  const frameworks = ['ALL',...new Set(controls.map(c=>c.framework))];
+  const statuses   = ['ALL','pass','partial','fail','missing'];
+  const filtered   = controls.filter(c=>(fw==='ALL'||c.framework===fw)&&(statusF==='ALL'||c.status===statusF));
+
+  return React.createElement('div',null,
+    React.createElement('div',{style:{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}},
+      frameworks.map(f=>React.createElement('button',{key:f,className:`fw-tab${fw===f?' active':''}`,onClick:()=>setFw(f)},f)),
+      React.createElement('div',{style:{marginLeft:'auto',display:'flex',gap:6}},
+        statuses.map(st=>React.createElement('button',{key:st,
+          className:`fw-tab${statusF===st?' active':''}`,onClick:()=>setStatusF(st)},st))
+      )
+    ),
+    React.createElement('div',{style:{fontSize:13,color:'var(--text2)',marginBottom:16}},
+      `Showing ${filtered.length} of ${controls.length} controls`
+    ),
+    filtered.map(ctrl=>React.createElement(Expander,{
+      key:ctrl.control_id,
+      title:`${ctrl.control_id}  —  ${ctrl.control_name}`,
+      badge:React.createElement(StatusBadge,{status:ctrl.status}),
+      subtitle:`${ctrl.score}%  ·  ${ctrl.passed_checks}/${ctrl.total_checks} checks`,
+      defaultOpen:ctrl.status==='fail'||ctrl.status==='missing'
+    },
+      React.createElement('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16,marginBottom:12}},
+        React.createElement('div',null,
+          React.createElement('div',{style:{fontSize:12,color:'var(--text2)',marginBottom:4}},
+            `Framework: ${ctrl.framework_ref||ctrl.framework}`),
+          ctrl.evidence_files?.length>0 && React.createElement('div',{style:{fontSize:12,color:'var(--text3)',marginBottom:8}},
+            `Evidence: ${ctrl.evidence_files.join(', ')}`),
+          ctrl.recommendation && React.createElement('div',{style:{background:'var(--amber-bg)',border:'1px solid var(--amber)',borderRadius:6,padding:'8px 12px',fontSize:12,color:'var(--amber)'}},
+            `💡 ${ctrl.recommendation}`)
+        ),
+        React.createElement('div',{className:'card-sm',style:{textAlign:'center'}},
+          React.createElement('div',{style:{fontSize:28,fontWeight:700,color:ctrl.score>=90?'var(--green)':ctrl.score>=60?'var(--amber)':'var(--red)'}},`${ctrl.score}%`),
+          React.createElement('div',{style:{fontSize:12,color:'var(--text2)'}},`${ctrl.passed_checks}/${ctrl.total_checks} checks passed`)
+        )
+      ),
+      ctrl.checks?.map((chk,i)=>React.createElement(CheckRow,{key:i,check:chk}))
+    ))
+  );
+}
+
+// ── Evidence Page ─────────────────────────────────────────────────────────────
+function Evidence({report}) {
+  const [tab, setTab] = useState(null);
+  if (!report) return React.createElement('div',{className:'empty'},
+    React.createElement('div',{className:'empty-icon'},'📁'),
+    React.createElement('div',{className:'empty-title'},'Run an assessment first'));
+
+  const store   = report.evidence_store || {};
+  const types   = Object.keys(store);
+  const sources = report.sources || [];
+  const curTab  = tab || types[0];
+
+  const icons = {policy:'📄',risk:'⚠️',logs:'📋',access_review:'👤'};
+  const data  = store[curTab];
+
+  return React.createElement('div',null,
+    // Source chips
+    React.createElement('div',{className:'card',style:{marginBottom:20}},
+      React.createElement('div',{className:'section-title'},'Evidence Sources Loaded'),
+      React.createElement('div',{},
+        sources.length===0
+          ? React.createElement('span',{style:{color:'var(--text3)',fontSize:13}},'No sources')
+          : sources.map((s,i)=>React.createElement('span',{key:i,className:'source-chip'},
+              React.createElement('span',{className:'dot',style:{background:s.source?.startsWith('github')?'var(--blue)':'var(--green)'}}),
+              React.createElement('span',null,s.source?.startsWith('github')?'GitHub':'Local'),
+              React.createElement('span',{style:{color:'var(--text)'}},s.file),
+              React.createElement('span',{style:{color:'var(--text3)'}},`[${s.type}]`)
+            ))
+      )
+    ),
+
+    // Type tabs
+    React.createElement('div',{style:{display:'flex',gap:8,marginBottom:16}},
+      types.map(t=>React.createElement('button',{key:t,
+        className:`fw-tab${curTab===t?' active':''}`,onClick:()=>setTab(t)},
+        `${icons[t]||''} ${t}`))
+    ),
+
+    // Content
+    data && React.createElement('div',{className:'card'},
+      curTab==='policy' && React.createElement('div',null,
+        React.createElement('div',{className:'grid-2',style:{marginBottom:16}},
+          [['Name',data.name],['Version',data.version||'—'],['Approved by',data.approved_by||'—'],
+           ['Approval date',data.approval_date||'—'],['Review date',data.review_date||'—'],
+           ['Classification',data.classification||'—']
+          ].map(([k,v])=>React.createElement('div',{key:k},
+            React.createElement('div',{style:{fontSize:11,color:'var(--text3)',marginBottom:2}},k),
+            React.createElement('div',{style:{fontWeight:500}},v)
+          ))
+        ),
+        data.keywords_found?.length>0 && React.createElement('div',null,
+          React.createElement('div',{style:{fontSize:11,color:'var(--text3)',marginBottom:6}},'Keywords found'),
+          data.keywords_found.map(k=>React.createElement('span',{key:k,className:'pill',style:{marginRight:4}},k))
+        )
+      ),
+
+      curTab==='risk' && React.createElement('div',null,
+        React.createElement('div',{style:{marginBottom:12,fontSize:13,color:'var(--text2)'}},
+          `${Array.isArray(data)?data.length:0} risk entries`),
+        (Array.isArray(data)?data:[]).map((r,i)=>React.createElement(Expander,{
+          key:i,title:`[${r.risk_id}] ${r.risk_description?.slice(0,70)}`,
+          badge:React.createElement('span',{className:'badge',style:{
+            background:{critical:'var(--red-bg)',high:'var(--red-bg)',medium:'var(--amber-bg)',low:'var(--green-bg)'}[r.impact]||'var(--bg3)',
+            color:{critical:'var(--red)',high:'var(--red)',medium:'var(--amber)',low:'var(--green)'}[r.impact]||'var(--text2)'
+          }},r.impact?.toUpperCase())
+        },
+          React.createElement('div',{className:'grid-2'},
+            [['Impact',r.impact],['Likelihood',r.likelihood],['Risk score',`${r.risk_score}/25`],
+             ['Owner',r.owner||'—'],['Status',r.status],['Mitigation',r.mitigation||'—']
+            ].map(([k,v])=>React.createElement('div',{key:k,style:{marginBottom:8}},
+              React.createElement('div',{style:{fontSize:11,color:'var(--text3)'}}),k,
+              React.createElement('div',{style:{fontWeight:500}},v)
+            ))
+          )
+        ))
+      ),
+
+      curTab==='logs' && React.createElement('div',null,
+        React.createElement('div',{className:'grid-3',style:{marginBottom:16}},
+          [['Total entries',data.entry_count||0],['Coverage (days)',data.coverage_days??'—'],
+           ['Failure rate',`${((data.failure_rate||0)*100).toFixed(1)}%`]
+          ].map(([k,v])=>React.createElement('div',{key:k,style:{textAlign:'center'}},
+            React.createElement('div',{style:{fontSize:22,fontWeight:700,color:'var(--blue)'}},v),
+            React.createElement('div',{style:{fontSize:12,color:'var(--text2)'}},k)
+          ))
+        ),
+        React.createElement('div',{className:'section-title'},'Recent entries'),
+        React.createElement('table',{className:'table'},
+          React.createElement('thead',null,React.createElement('tr',null,
+            ['Timestamp','User','Action','Outcome','Event'].map(h=>React.createElement('th',{key:h},h))
+          )),
+          React.createElement('tbody',null,
+            (data.entries||[]).slice(0,20).map((e,i)=>React.createElement('tr',{key:i},
+              React.createElement('td',null,React.createElement('code',{style:{fontSize:11}},e.timestamp||'—')),
+              React.createElement('td',null,e.user||'—'),
+              React.createElement('td',null,e.action||'—'),
+              React.createElement('td',null,e.outcome&&React.createElement('span',{
+                className:`badge ${e.outcome?.toLowerCase()==='success'?'badge-pass':'badge-fail'}`
+              },e.outcome)),
+              React.createElement('td',{style:{maxWidth:300,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:12,color:'var(--text2)'}},e.event)
+            ))
+          )
+        )
+      ),
+
+      curTab==='access_review' && React.createElement('div',null,
+        React.createElement('div',{className:'grid-3',style:{marginBottom:16}},
+          [['Total accounts',(data.records||[]).length],
+           ['Privileged accounts',(data.records||[]).filter(r=>r.privileged).length],
+           ['Privileged without MFA',(data.records||[]).filter(r=>r.privileged&&!r.mfa_enabled).length]
+          ].map(([k,v])=>React.createElement('div',{key:k,style:{textAlign:'center'}},
+            React.createElement('div',{style:{fontSize:22,fontWeight:700,color:'var(--blue)'}},v),
+            React.createElement('div',{style:{fontSize:12,color:'var(--text2)'}},k)
+          ))
+        ),
+        React.createElement('table',{className:'table'},
+          React.createElement('thead',null,React.createElement('tr',null,
+            ['User','Role','Status','Privileged','MFA','Last reviewed'].map(h=>React.createElement('th',{key:h},h))
+          )),
+          React.createElement('tbody',null,
+            (data.records||[]).map((r,i)=>React.createElement('tr',{key:i},
+              React.createElement('td',null,React.createElement('strong',null,r.user)),
+              React.createElement('td',null,r.role),
+              React.createElement('td',null,React.createElement('span',{
+                className:`badge ${r.status==='active'?'badge-pass':r.status==='revoked'?'badge-fail':'badge-partial'}`
+              },r.status)),
+              React.createElement('td',null,r.privileged?React.createElement('span',{className:'badge badge-purple'},'YES'):'—'),
+              React.createElement('td',null,r.mfa_enabled===true?React.createElement('span',{className:'badge badge-pass'},'✓'):
+                r.mfa_enabled===false?React.createElement('span',{className:'badge badge-fail'},'✗'):'—'),
+              React.createElement('td',null,r.last_reviewed||'—')
+            ))
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App() {
+  const [page, setPage] = useState('run');
+  const {report, running, progress, startAssessment} = useReport();
+
+  const pages = [
+    {id:'run',   label:'Run'},
+    {id:'dash',  label:'Dashboard'},
+    {id:'ctrl',  label:'Controls'},
+    {id:'evid',  label:'Evidence'},
+  ];
+
+return React.createElement('div',{id:'root'},
+  React.createElement('nav',{className:'nav'},
+    React.createElement('div',{className:'nav-logo'},
+      React.createElement('img', {
+        src: 'D:/GRC_V4/babcom.png',   // <-- your logo path
+        alt: 'BABCOM Logo',
+        className: 'logo-img'
+      }),
+    ),
+      React.createElement('div',{className:'nav-links'},
+        pages.map(p=>React.createElement('button',{
+          key:p.id, className:`nav-link${page===p.id?' active':''}`,
+          onClick:()=>setPage(p.id)
+        },p.label)),
+        report && React.createElement('span',{className:'nav-badge'},`${report.summary.overall_score}%`)
+      )
+    ),
+    React.createElement('main',{className:'main'},
+      page==='run' && React.createElement('div',null,
+        React.createElement('h1',{className:'page-title'},'Assessment Configuration'),
+        React.createElement('p',{className:'page-sub'},'Connect to your GitHub repo and local path, then run the GRC engine'),
+        React.createElement(RunPanel,{onRun:startAssessment,running,progress})
+      ),
+      page==='dash' && React.createElement('div',null,
+        React.createElement('h1',{className:'page-title'},'Compliance Dashboard'),
+        React.createElement('p',{className:'page-sub'},'Real-time compliance posture across all frameworks'),
+        React.createElement(Dashboard,{report})
+      ),
+      page==='ctrl' && React.createElement('div',null,
+        React.createElement('h1',{className:'page-title'},'Control Findings'),
+        React.createElement('p',{className:'page-sub'},'Detailed model-based validation results per control'),
+        React.createElement(Controls,{report})
+      ),
+      page==='evid' && React.createElement('div',null,
+        React.createElement('h1',{className:'page-title'},'Evidence Inspector'),
+        React.createElement('p',{className:'page-sub'},'Canonical data extracted from GitHub and local sources'),
+        React.createElement(Evidence,{report})
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>

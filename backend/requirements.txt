@@ -1,0 +1,28 @@
+# ============================================================
+# BABCOM GRC Platform — Python Requirements
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# Web framework + server
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+
+# PDF text extraction
+pdfplumber>=0.10.0
+
+# GitHub API connector
+requests>=2.31.0
+
+# Data validation (FastAPI uses this internally too)
+pydantic>=2.0.0
+
+# Scheduled assessments (cron jobs)
+apscheduler>=3.10.0
+
+# ── Optional — uncomment to enable ────────────────────────
+# LLM-assisted field extraction (when regex confidence is low)
+# anthropic>=0.25.0
+
+# PDF compliance report export
+# reportlab>=4.0.0

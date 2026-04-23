@@ -1,0 +1,65 @@
+name: GRC Evidence Scan
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - '**.txt'
+      - '**.pdf'
+      - '**.csv'
+      - '**.log'
+      - '**.json'
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pdfplumber requests
+
+      - name: Run GRC scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd backend
+          python - <<'EOF'
+          import sys, json
+          sys.path.insert(0, ".")
+          from connectors.local_connector import LocalConnector
+          from engine.runner import GRCRunner
+
+          lc = LocalConnector(base_path=".")
+          index = lc.fetch_all()
+          print(f"Found {len(index)} evidence files")
+
+          runner = GRCRunner(evidence_index=index, frameworks=["ISO27001","SOC2","GDPR"])
+          report = runner.run()
+
+          summary = report["summary"]
+          print(f"\n=== GRC Scan Results ===")
+          print(f"Overall score : {summary['overall_score']}%")
+          print(f"Risk level    : {summary['risk_level']}")
+          for c in report["controls"]:
+              print(f"  [{c['status'].upper():12}] {c['control_id']}  {c['control_name']}")
+
+          with open("grc_report.json","w") as f:
+              json.dump(report, f, indent=2)
+          print("\nReport saved to grc_report.json")
+          EOF
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grc-report
+          path: backend/grc_report.json
+          retention-days: 30

@@ -1,0 +1,53 @@
+Access Review Report — BABCOM Q4 2024
+System: Corporate IAM Platform
+Review Period: Q4 2024
+
+User: alice
+Role: Administrator
+Department: IT Security
+Access Level: admin
+Privileged: yes
+MFA: yes
+Status: active
+Last Reviewed: 2024-11-01
+Reviewer: Jane Doe
+
+User: bob
+Role: Data Analyst
+Department: Finance
+Access Level: read
+Privileged: no
+MFA: yes
+Status: active
+Last Reviewed: 2024-11-01
+Reviewer: Jane Doe
+
+User: charlie
+Role: Database Administrator
+Department: Engineering
+Access Level: admin
+Privileged: yes
+MFA: no
+Status: suspended
+Last Reviewed: 2024-09-15
+Reviewer: Mike Brown
+
+User: david
+Role: Developer
+Department: Engineering
+Access Level: write
+Privileged: no
+MFA: yes
+Status: active
+Last Reviewed: 2024-10-20
+Reviewer: Mike Brown
+
+User: eve
+Role: System Administrator
+Department: IT Operations
+Access Level: admin
+Privileged: yes
+MFA: yes
+Status: active
+Last Reviewed: 2024-11-10
+Reviewer: Jane Doe

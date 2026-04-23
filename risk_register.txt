@@ -1,0 +1,37 @@
+Risk Register — BABCOM 2025
+
+Risk ID: R-001
+Risk: Unauthorised access to customer data via stolen credentials
+Impact: High
+Likelihood: Medium
+Owner: Alice Smith
+Status: Approved
+Mitigation: MFA enforced on all external systems. Privileged access review completed Q4 2024.
+Residual Risk: Low
+
+Risk ID: R-002
+Risk: Ransomware attack via phishing email
+Impact: Critical
+Likelihood: High
+Owner: Bob Patel
+Status: Approved
+Mitigation: Email filtering (Proofpoint) deployed. Staff phishing simulation run quarterly. EDR on all endpoints.
+Residual Risk: Medium
+
+Risk ID: R-003
+Risk: Third-party vendor data breach
+Impact: High
+Likelihood: Low
+Owner: Carol White
+Status: Approved
+Mitigation: Annual vendor security assessments. Data Processing Agreements in place for all processors.
+Residual Risk: Low
+
+Risk ID: R-004
+Risk: Unpatched software vulnerabilities exploited
+Impact: High
+Likelihood: Medium
+Owner: David Lee
+Status: Pending
+Mitigation: Patch management policy drafted. Automated scanning being implemented.
+Residual Risk: High

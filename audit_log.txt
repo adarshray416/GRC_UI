@@ -1,0 +1,13 @@
+2024-10-01T08:12:33Z user=alice action=login outcome=success ip=192.168.1.10 resource=/dashboard
+2024-10-01T08:45:01Z user=bob action=export outcome=success ip=192.168.1.22 resource=/reports/q3.csv
+2024-10-02T09:01:55Z user=charlie action=login outcome=failure ip=203.0.113.5 resource=/admin
+2024-10-02T09:02:10Z user=charlie action=login outcome=failure ip=203.0.113.5 resource=/admin
+2024-10-02T09:02:25Z user=charlie action=login outcome=failure ip=203.0.113.5 resource=/admin
+2024-10-03T10:30:00Z user=alice action=delete outcome=success ip=192.168.1.10 resource=/tmp/old_backup
+2024-10-10T14:22:01Z user=sysadmin action=sudo outcome=success ip=10.0.0.1 resource=/etc/passwd
+2024-10-15T11:00:00Z user=david action=password_change outcome=success ip=192.168.1.55 resource=/profile
+2024-11-01T08:00:00Z user=alice action=login outcome=success ip=192.168.1.10 resource=/dashboard
+2024-11-15T09:30:00Z user=bob action=login outcome=success ip=192.168.1.22 resource=/dashboard
+2024-12-01T07:55:00Z user=sysadmin action=login outcome=success ip=10.0.0.1 resource=/admin
+2024-12-15T14:00:00Z user=alice action=export outcome=success ip=192.168.1.10 resource=/audit/q4.csv
+2024-12-31T23:59:59Z user=system action=audit_rotate outcome=success ip=127.0.0.1 resource=/logs

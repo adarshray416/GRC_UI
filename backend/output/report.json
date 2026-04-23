@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-04-02T12:39:18.400768Z",
+  "summary": {
+    "total_controls": 4,
+    "pass": 0,
+    "partial": 1,
+    "fail": 0,
+    "missing": 3,
+    "not_applicable": 0,
+    "overall_score": 66.7,
+    "risk_level": "High"
+  },
+  "controls": [
+    {
+      "control_id": "A.5.1",
+      "control_name": "Information Security Policies",
+      "status": "missing",
+      "score": 0.0,
+      "passed_checks": 0,
+      "total_checks": 0,
+      "evidence_files": [],
+      "recommendation": "No policy evidence found. Policy must be approved by management, versioned, and reviewed annually.",
+      "framework_ref": "ISO 27001:2022 A.5.1",
+      "checks": []
+    },
+    {
+      "control_id": "A.9.2",
+      "control_name": "User Access Management",
+      "status": "partial",
+      "score": 66.7,
+      "passed_checks": 2,
+      "total_checks": 3,
+      "evidence_files": [
+        "itsecurity20231219125350824.pdf"
+      ],
+      "recommendation": "Review access quarterly. Revoke leavers. Enforce MFA on privileged accounts.",
+      "framework_ref": "ISO 27001:2022 A.9.2",
+      "checks": [
+        {
+          "check_id": "access.mfa_privileged",
+          "description": "All privileged accounts have MFA",
+          "passed": true,
+          "actual": "0 without MFA",
+          "expected": "0 accounts",
+          "detail": ""
+        },
+        {
+          "check_id": "access.review_cadence",
+          "description": "All reviews done within 90 days",
+          "passed": false,
+          "actual": "717 overdue",
+          "expected": "0 overdue",
+          "detail": "Overdue: ['PUNJAB', 'CORPORATION', 'Punjab', 'InformationS', 'Manual']"
+        },
+        {
+          "check_id": "access.revocation",
+          "description": "No suspended accounts hold active access",
+          "passed": true,
+          "actual": "0 suspended",
+          "expected": "0 suspended",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "control_id": "A.12.4",
+      "control_name": "Logging and Monitoring",
+      "status": "missing",
+      "score": 0.0,
+      "passed_checks": 0,
+      "total_checks": 0,
+      "evidence_files": [],
+      "recommendation": "No logs evidence found. Maintain audit logs for at least 90 days with complete timestamps.",
+      "framework_ref": "ISO 27001:2022 A.12.4",
+      "checks": []
+    },
+    {
+      "control_id": "A.8.1",
+      "control_name": "Risk Assessment and Treatment",
+      "status": "missing",
+      "score": 0.0,
+      "passed_checks": 0,
+      "total_checks": 0,
+      "evidence_files": [],
+      "recommendation": "No risk evidence found. All risks must have a named owner and an approved treatment plan.",
+      "framework_ref": "ISO 27001:2022 A.8.1",
+      "checks": []
+    }
+  ],
+  "evidence_types": [
+    "access_review"
+  ]
+}

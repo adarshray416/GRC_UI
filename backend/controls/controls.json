@@ -1,0 +1,74 @@
+[
+  {
+    "control_id": "ISO-A.5.1",
+    "name": "Information Security Policies",
+    "framework": "ISO27001",
+    "evidence_type": "policy",
+    "framework_ref": "ISO 27001:2022 A.5.1",
+    "recommendation": "Policy must be approved, versioned, and reviewed annually."
+  },
+  {
+    "control_id": "ISO-A.9.2",
+    "name": "User Access Management",
+    "framework": "ISO27001",
+    "evidence_type": "access_review",
+    "framework_ref": "ISO 27001:2022 A.9.2",
+    "recommendation": "Review access quarterly. Revoke leavers. Enforce MFA on privileged accounts."
+  },
+  {
+    "control_id": "ISO-A.12.4",
+    "name": "Logging and Monitoring",
+    "framework": "ISO27001",
+    "evidence_type": "logs",
+    "framework_ref": "ISO 27001:2022 A.12.4",
+    "recommendation": "Maintain audit logs for at least 90 days with complete timestamps."
+  },
+  {
+    "control_id": "ISO-A.8.1",
+    "name": "Risk Assessment and Treatment",
+    "framework": "ISO27001",
+    "evidence_type": "risk",
+    "framework_ref": "ISO 27001:2022 A.8.1",
+    "recommendation": "All risks must have a named owner and an approved treatment plan."
+  },
+  {
+    "control_id": "SOC2-CC6.1",
+    "name": "Logical and Physical Access Controls",
+    "framework": "SOC2",
+    "evidence_type": "access_review",
+    "framework_ref": "SOC 2 CC6.1",
+    "recommendation": "Restrict system access to authorised users only. Review quarterly."
+  },
+  {
+    "control_id": "SOC2-CC7.2",
+    "name": "System Monitoring",
+    "framework": "SOC2",
+    "evidence_type": "logs",
+    "framework_ref": "SOC 2 CC7.2",
+    "recommendation": "Monitor system components for anomalies and security events."
+  },
+  {
+    "control_id": "SOC2-CC3.2",
+    "name": "Risk Assessment Process",
+    "framework": "SOC2",
+    "evidence_type": "risk",
+    "framework_ref": "SOC 2 CC3.2",
+    "recommendation": "Maintain a risk register with named owners and treatment plans."
+  },
+  {
+    "control_id": "GDPR-Art32",
+    "name": "Security of Processing",
+    "framework": "GDPR",
+    "evidence_type": "policy",
+    "framework_ref": "GDPR Article 32",
+    "recommendation": "Document encryption, pseudonymisation and access control measures."
+  },
+  {
+    "control_id": "GDPR-Art30",
+    "name": "Records of Processing Activities",
+    "framework": "GDPR",
+    "evidence_type": "logs",
+    "framework_ref": "GDPR Article 30",
+    "recommendation": "Maintain records of all processing activities with timestamps."
+  }
+]

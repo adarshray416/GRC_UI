@@ -1,0 +1,24 @@
+Information Security Policy
+
+Title: BABCOM Information Security Policy
+Version: 3.1
+Approved by: Alice Smith, CISO
+Approval Date: 2024-01-10
+Review Date: 2026-01-10
+Scope: All employees, contractors, and third-party vendors who access BABCOM systems and data.
+Classification: Confidential
+
+1. Purpose
+This policy establishes the framework for managing information security risks across BABCOM operations in line with ISO 27001:2022 and GDPR Article 32.
+
+2. Roles and Responsibilities
+The CISO is responsible for maintaining this policy. Department heads are responsible for ensuring their teams comply.
+
+3. Acceptable Use
+All users must use BABCOM systems only for authorised business purposes. Personal use is prohibited.
+
+4. Data Classification
+All data must be classified as Public, Internal, Confidential, or Restricted.
+
+5. Review
+This policy is reviewed annually or following significant changes to the business or regulatory environment.
