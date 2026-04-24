@@ -29,7 +29,7 @@ COPY backend/ ./
 COPY Frontend/ ./frontend/
 
 # ── Evidence + controls ───────────────────────────────────────────────────────
-COPY evidence/ ./evidence/
+COPY backend/evidence_store/evidence/ ./evidence/
 
 # ── Expose port ───────────────────────────────────────────────────────────────
 EXPOSE 8000
