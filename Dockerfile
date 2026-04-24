@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir reportlab apscheduler
 COPY backend/ ./
 
 # ── Frontend (served as static files by FastAPI) ─────────────────────────────
-COPY frontend/ ./frontend/
+COPY Frontend/ ./frontend/
 
 # ── Evidence + controls ───────────────────────────────────────────────────────
 COPY evidence/ ./evidence/
