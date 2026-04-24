@@ -27,7 +27,7 @@ COPY backend/ ./
 
 # ── Frontend (served as static files by FastAPI) ─────────────────────────────
 COPY Frontend/ ./frontend/
-COPY babcom.png ./babcom.png
+COPY babcom.png ./frontend/babcom.png
 
 # ── Evidence + controls ───────────────────────────────────────────────────────
 COPY backend/evidence_store/evidence/ ./evidence/
