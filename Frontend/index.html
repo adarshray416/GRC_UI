@@ -2,614 +2,691 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>BABCOM GRC Platform</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d0f17;--bg2:#131620;--bg3:#1a1d2e;--card:#1e2235;
+  --bg:#0d0f17;--bg2:#131620;--bg3:#1a1d2e;--card:#1e2235;--card2:#222640;
   --border:#2a2f4a;--border2:#3a3f5c;
   --text:#e8eaf6;--text2:#9da3c8;--text3:#5c6285;
-  --green:#4ade80;--green-bg:#0d2b1a;
-  --amber:#fbbf24;--amber-bg:#2b1f08;
-  --red:#f87171;--red-bg:#2b0d0d;
-  --blue:#60a5fa;--blue-bg:#0d1f3b;
-  --purple:#a78bfa;--purple-bg:#1a1240;
-  --radius:10px;--radius-sm:6px;
-  --font:'Inter',system-ui,sans-serif;
+  --green:#4ade80;--gbg:#0d2b1a;
+  --amber:#fbbf24;--abg:#2b1f08;
+  --red:#f87171;--rbg:#2b0d0d;
+  --blue:#60a5fa;--bbg:#0d1f3b;
+  --purple:#a78bfa;--pbg:#1a1240;
+  --radius:10px;--rsm:6px;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh}
 #root{display:flex;flex-direction:column;min-height:100vh}
 
-/* Nav */
-.nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:32px;position:sticky;top:0;z-index:100}
-.nav-logo{font-size:16px;font-weight:700;color:#fff;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
-.nav-logo span{color:var(--blue)}
-.nav-links{display:flex;gap:4px;margin-left:auto;align-items:center}
-.nav-link{padding:6px 14px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;color:var(--text2);border:none;background:none;transition:all .15s}
-.nav-link:hover{background:var(--bg3);color:var(--text)}
-.nav-link.active{background:var(--blue-bg);color:var(--blue)}
-.nav-badge{background:var(--green-bg);color:var(--green);font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px}
+/* ── Banners ───────────────────────────────────────────────────────── */
+.banner{overflow:hidden;transition:max-height .35s ease}
+.banner.vis{max-height:180px}.banner.hid{max-height:0}
+.banner-off{background:#1a0a0a;border-bottom:1px solid #5a1a1a}
+.banner-on{background:#0a1a0f;border-bottom:1px solid #1a5a2a}
+.boff-inner{padding:12px 24px;display:flex;align-items:flex-start;gap:12px}
+.boff-icon{width:32px;height:32px;border-radius:50%;background:var(--rbg);border:1px solid var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:14px}
+.boff-title{font-size:13px;font-weight:600;color:var(--red);margin-bottom:4px}
+.boff-steps{font-size:11px;color:#b07070;line-height:1.9}
+.boff-steps code{background:#2a1010;padding:1px 6px;border-radius:3px;font-family:monospace;color:#f0a0a0;font-size:10px}
+.boff-retry{margin-left:auto;padding:6px 14px;border-radius:var(--rsm);background:var(--rbg);border:1px solid var(--red);color:var(--red);font-size:12px;cursor:pointer;flex-shrink:0}
+.boff-retry:hover{background:#3b1010}
+.bon-inner{padding:7px 24px;font-size:12px;color:#60c080;display:flex;align-items:center;gap:7px}
 
-/* Layout */
-.main{flex:1;padding:24px;max-width:1200px;margin:0 auto;width:100%}
-.page-title{font-size:22px;font-weight:600;margin-bottom:4px}
-.page-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
-
-/* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.card-sm{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
-
-/* Grid */
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-@media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}}
-
-/* KPI card */
-.kpi{text-align:center}
-.kpi-val{font-size:32px;font-weight:700;margin:6px 0 2px}
-.kpi-label{font-size:12px;color:var(--text2)}
-.kpi-sub{font-size:11px;color:var(--text3);margin-top:2px}
-
-/* Badges */
-.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.4px}
-.badge-pass{background:var(--green-bg);color:var(--green)}
-.badge-partial{background:var(--amber-bg);color:var(--amber)}
-.badge-fail{background:var(--red-bg);color:var(--red)}
-.badge-missing{background:var(--bg3);color:var(--text2)}
-.badge-info{background:var(--blue-bg);color:var(--blue)}
-.badge-purple{background:var(--purple-bg);color:var(--purple)}
-
-/* Table */
-.table{width:100%;border-collapse:collapse;font-size:13px}
-.table th{padding:8px 12px;text-align:left;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-.table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.table tr:last-child td{border-bottom:none}
-.table tr:hover td{background:var(--bg3)}
-
-/* Score bar */
-.score-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:6px}
-.score-fill{height:100%;border-radius:3px;transition:width .6s ease}
-
-/* Buttons */
-.btn{padding:8px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
-.btn-primary{background:var(--blue);color:#fff}
-.btn-primary:hover{opacity:.85}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed}
-.btn-outline{background:none;border:1px solid var(--border2);color:var(--text)}
-.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
-
-/* Form */
-.form-group{margin-bottom:16px}
-.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500}
-.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;color:var(--text);font-size:13px;outline:none;transition:border .15s}
-.form-input:focus{border-color:var(--blue)}
-
-/* Progress log */
-.progress-log{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-family:monospace;font-size:12px;max-height:180px;overflow-y:auto}
-.log-line{color:var(--text2);line-height:1.7}
-.log-line.ok{color:var(--green)}
-.log-line.err{color:var(--red)}
-
-/* Expander */
-.expander{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px}
-.exp-header{padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:var(--bg3);font-size:13px}
-.exp-header:hover{background:var(--bg2)}
-.exp-body{padding:16px;border-top:1px solid var(--border);background:var(--card)}
-.exp-arrow{transition:transform .2s;font-size:11px;color:var(--text3)}
-.exp-arrow.open{transform:rotate(180deg)}
-
-/* Check rows */
-.check-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.check-row:last-child{border-bottom:none}
-.check-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px}
-.check-ok{background:var(--green-bg);color:var(--green)}
-.check-fail{background:var(--red-bg);color:var(--red)}
-
-/* Framework tabs */
-.fw-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.fw-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .15s}
-.fw-tab.active{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
-
-/* Pill */
-.pill{padding:2px 8px;border-radius:20px;font-size:11px;background:var(--bg3);color:var(--text2);display:inline-block}
-
-/* Logo */
+/* ── Nav ───────────────────────────────────────────────────────────── */
+.nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;position:sticky;top:0;z-index:100}
+.logo{font-size:15px;font-weight:700;color:#fff;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.logo span{color:var(--blue)}
 .logo-img {
   width: 120px;      /* adjust as needed */
   height: 40px;
   object-fit: contain;
   margin-right: 10px;
 }
+.nav-links{display:flex;gap:2px;margin-left:auto;align-items:center}
+.nbtn{padding:6px 13px;border-radius:var(--rsm);font-size:13px;cursor:pointer;color:var(--text2);border:none;background:none;transition:all .15s}
+.nbtn:hover{background:var(--bg3);color:var(--text)}
+.nbtn.act{background:var(--bbg);color:var(--blue)}
+.nav-score{background:var(--gbg);color:var(--green);font-size:11px;padding:2px 9px;border-radius:20px}
+.conn{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;margin-left:8px}
+.cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.c-ok{background:var(--green)}.c-err{background:var(--red)}.c-chk{background:var(--amber);animation:pulse 1s infinite}
 
-/* Pulse dot */
+/* ── Layout ────────────────────────────────────────────────────────── */
+.main{flex:1;padding:24px;max-width:1280px;margin:0 auto;width:100%}
+.ptitle{font-size:22px;font-weight:600;margin-bottom:4px}
+.psub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card-sm{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.stitle{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+
+/* ── Grid ──────────────────────────────────────────────────────────── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr}}
+
+/* ── KPI ───────────────────────────────────────────────────────────── */
+.kpi{text-align:center}
+.kval{font-size:28px;font-weight:700;margin:5px 0 2px}
+.klbl{font-size:11px;color:var(--text2)}
+.ksub{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* ── Badges ────────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.bp{background:var(--gbg);color:var(--green)}.bpa{background:var(--abg);color:var(--amber)}
+.bf{background:var(--rbg);color:var(--red)}.bm{background:var(--bg3);color:var(--text2)}
+.bi{background:var(--bbg);color:var(--blue)}.bpu{background:var(--pbg);color:var(--purple)}
+
+/* ── Table ─────────────────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{padding:7px 12px;text-align:left;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg3)}
+
+/* ── Score bar ─────────────────────────────────────────────────────── */
+.sbar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:5px}
+.sfill{height:100%;border-radius:3px;transition:width .6s}
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+.btn{padding:8px 16px;border-radius:var(--rsm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-p{background:var(--blue);color:#fff}.btn-p:hover{opacity:.85}.btn-p:disabled{opacity:.4;cursor:not-allowed}
+.btn-g{background:var(--green);color:#0d2b1a;font-weight:600}.btn-g:hover{opacity:.85}
+.btn-o{background:none;border:1px solid var(--border2);color:var(--text)}.btn-o:hover{border-color:var(--blue);color:var(--blue)}
+.btn-r{background:var(--rbg);border:1px solid var(--red);color:var(--red)}.btn-r:hover{opacity:.85}
+
+/* ── Form ──────────────────────────────────────────────────────────── */
+.fg{margin-bottom:14px}
+.fl{font-size:12px;color:var(--text2);margin-bottom:5px;display:block;font-weight:500}
+.fi{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);padding:7px 11px;color:var(--text);font-size:13px;outline:none;transition:border .15s}
+.fi:focus{border-color:var(--blue)}
+
+/* ── Upload dropzone ───────────────────────────────────────────────── */
+.dropzone{border:2px dashed var(--border2);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.dropzone:hover,.dropzone.drag{border-color:var(--blue);background:var(--bbg)}
+.dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dropzone-icon{font-size:28px;margin-bottom:8px;color:var(--text3)}
+.dropzone-label{font-size:13px;color:var(--text2)}
+.dropzone-hint{font-size:11px;color:var(--text3);margin-top:4px}
+.file-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;font-size:11px;background:var(--bg3);border:1px solid var(--border);margin:3px}
+.file-chip button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:0 2px}
+.file-chip button:hover{color:var(--red)}
+
+/* ── Log ───────────────────────────────────────────────────────────── */
+.plog{background:var(--bg);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;font-family:monospace;font-size:12px;max-height:220px;overflow-y:auto}
+.ll{color:var(--text2);line-height:1.8}.lok{color:var(--green)}.lerr{color:var(--red)}.lwrn{color:var(--amber)}
+.ws-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.ws-live{background:var(--green);animation:pulse 1.5s infinite}
+.ws-off{background:var(--text3)}
+
+/* ── Expander ──────────────────────────────────────────────────────── */
+.expdr{border:1px solid var(--border);border-radius:var(--rsm);overflow:hidden;margin-bottom:8px}
+.exph{padding:11px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:var(--bg3);font-size:13px}
+.exph:hover{background:var(--bg2)}
+.expb{padding:16px;border-top:1px solid var(--border);background:var(--card)}
+.expa{transition:transform .2s;font-size:11px;color:var(--text3)}
+.expa.op{transform:rotate(180deg)}
+
+/* ── Check rows ────────────────────────────────────────────────────── */
+.crow{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.crow:last-child{border-bottom:none}
+.cico{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px}
+.cok{background:var(--gbg);color:var(--green)}.cfl{background:var(--rbg);color:var(--red)}
+
+/* ── Tabs ──────────────────────────────────────────────────────────── */
+.ftab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .15s}
+.ftab.act{background:var(--bbg);border-color:var(--blue);color:var(--blue)}
+.pill{padding:2px 7px;border-radius:20px;font-size:11px;background:var(--bg3);color:var(--text2);display:inline-block}
+
+/* ── Source chips ──────────────────────────────────────────────────── */
+.schip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);margin:3px}
+.d6{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── Scheduler card ────────────────────────────────────────────────── */
+.sched-card{background:var(--card2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:16px}
+.sched-icon{width:40px;height:40px;border-radius:50%;background:var(--bbg);border:1px solid var(--blue);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+/* ── Animations ────────────────────────────────────────────────────── */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.pulse{animation:pulse 1.5s infinite;display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px}
-
-/* Empty state */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 .empty{text-align:center;padding:60px 20px;color:var(--text3)}
-.empty-icon{font-size:40px;margin-bottom:12px}
-.empty-title{font-size:16px;color:var(--text2);margin-bottom:6px}
-
-/* Source chips */
-.source-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);margin:3px}
-.source-chip .dot{width:6px;height:6px;border-radius:50%}
+.eico{font-size:36px;margin-bottom:10px}.etitle{font-size:15px;color:var(--text2);margin-bottom:5px}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
-const {useState, useEffect, useCallback, useRef} = React;
-const API = 'http://localhost:8000';
+const {useState,useEffect,useCallback,useRef} = React;
+// Auto-detect backend URL:
+//   - If window.GRC_API_URL is set (injected by server), use it
+//   - If deployed on same domain (e.g. via Nginx), use /api proxy path
+//   - Otherwise fall back to localhost:8000 for local dev
+const API = (
+  window.GRC_API_URL ||
+  (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    ? ''          // same-origin: Nginx proxies /api/* to backend
+    : 'http://localhost:8000')
+);
+const R = React.createElement;
 
 // ── API helpers ───────────────────────────────────────────────────────────────
 async function apiFetch(path, opts={}) {
   try {
-    const r = await fetch(API + path, opts);
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return await r.json();
-  } catch(e) { console.error(path, e); return null; }
+    const ctrl = new AbortController();
+    const t    = setTimeout(()=>ctrl.abort(),8000);
+    const res  = await fetch(API+path,{...opts,signal:ctrl.signal});
+    clearTimeout(t);
+    if(!res.ok){const b=await res.json().catch(()=>({}));throw new Error(b.detail||`HTTP ${res.status}`);}
+    return {ok:true,data:await res.json()};
+  } catch(e){
+    const off=['TypeError','AbortError'].includes(e.name)||e.message.includes('fetch')||e.message.includes('refused');
+    return {ok:false,offline:off,error:e.message};
+  }
+}
+
+async function apiUpload(files, onProgress) {
+  const fd = new FormData();
+  for(const f of files) fd.append('files', f);
+  try {
+    const r = await fetch(API+'/api/upload',{method:'POST',body:fd});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return {ok:true, data:await r.json()};
+  } catch(e){return {ok:false,error:e.message};}
 }
 
 // ── Hooks ─────────────────────────────────────────────────────────────────────
-function useReport() {
-  const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState([]);
-  const [running, setRunning] = useState(false);
-  const pollRef = useRef(null);
+function useHealth() {
+  const [st,setSt]     = useState('checking');
+  const [flash,setFlash]= useState(false);
+  const prev = useRef('checking');
+  const check = useCallback(async()=>{
+    const r = await apiFetch('/api/health');
+    const n = r.ok?'online':'offline';
+    if(prev.current==='offline'&&n==='online'){setFlash(true);setTimeout(()=>setFlash(false),3000);}
+    prev.current=n; setSt(n);
+  },[]);
+  useEffect(()=>{check();const t=setInterval(check,4000);return()=>clearInterval(t);},[check]);
+  return {st,flash,recheck:check};
+}
 
-  const startAssessment = useCallback(async (config) => {
-    setRunning(true); setProgress([]);
-    await apiFetch('/api/run', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(config)
-    });
-    pollRef.current = setInterval(async () => {
-      const status = await apiFetch('/api/status');
-      if (!status) return;
-      setProgress(status.progress || []);
-      if (!status.running) {
-        clearInterval(pollRef.current);
-        setRunning(false);
-        if (status.has_report) {
-          setLoading(true);
-          const r = await apiFetch('/api/report');
-          setReport(r); setLoading(false);
-        }
+function useAssessment(online) {
+  const [report,setReport]   = useState(null);
+  const [running,setRunning] = useState(false);
+  const [progress,setProg]   = useState([]);
+  const [err,setErr]         = useState(null);
+  const [wsLive,setWsLive]   = useState(false);
+  const poll = useRef(null);
+  const ws   = useRef(null);
+
+  // WebSocket for live log streaming
+  const connectWs = useCallback(()=>{
+    if(ws.current) ws.current.close();
+    try {
+      const wsBase = API.replace(/^http/, 'ws') || 
+  (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host;
+const sock = new WebSocket(wsBase + '/ws/logs');
+      sock.onopen  = ()=>setWsLive(true);
+      sock.onclose = ()=>setWsLive(false);
+      sock.onerror = ()=>setWsLive(false);
+      sock.onmessage = e=>{
+        if(e.data==='pong') return;
+        setProg(prev=>[...prev,e.data].slice(-200));
+      };
+      // Keepalive ping
+      const ping = setInterval(()=>{ if(sock.readyState===1) sock.send('ping'); },25000);
+      sock.onclose = ()=>{ setWsLive(false); clearInterval(ping); };
+      ws.current = sock;
+    } catch(e){ setWsLive(false); }
+  },[]);
+
+  useEffect(()=>{ if(online) connectWs(); return()=>ws.current?.close(); },[online,connectWs]);
+
+  const run = useCallback(async cfg=>{
+    if(!online) return;
+    setRunning(true); setProg([]); setErr(null);
+    const res = await apiFetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
+    if(!res.ok){setErr(res.error);setRunning(false);return;}
+    let fails=0;
+    poll.current=setInterval(async()=>{
+      const s=await apiFetch('/api/status');
+      if(!s.ok){if(++fails>6){clearInterval(poll.current);setRunning(false);}return;}
+      fails=0;
+      // Only use polling if WebSocket isn't live
+      if(!wsLive) setProg(s.data.progress||[]);
+      if(!s.data.running){
+        clearInterval(poll.current);setRunning(false);
+        if(s.data.has_report){const r=await apiFetch('/api/report');if(r.ok)setReport(r.data);}
       }
-    }, 800);
-  }, []);
+    },1200);
+  },[online,wsLive]);
 
-  useEffect(() => () => clearInterval(pollRef.current), []);
-  return {report, loading, running, progress, startAssessment};
+  useEffect(()=>()=>clearInterval(poll.current),[]);
+  return {report,running,progress,err,run,wsLive};
 }
 
-// ── Components ────────────────────────────────────────────────────────────────
-function StatusBadge({status}) {
-  const cls = {pass:'badge-pass',partial:'badge-partial',fail:'badge-fail',missing:'badge-missing',not_applicable:'badge-info'}[status]||'badge-missing';
-  return React.createElement('span',{className:`badge ${cls}`},status?.toUpperCase());
+function useScheduler() {
+  const [info,setInfo] = useState(null);
+  useEffect(()=>{
+    const load = async()=>{const r=await apiFetch('/api/scheduler/status');if(r.ok)setInfo(r.data);};
+    load(); const t=setInterval(load,30000); return()=>clearInterval(t);
+  },[]);
+  return info;
 }
 
-function ScoreBar({score, color}) {
-  const col = score>=90?'#4ade80':score>=70?'#fbbf24':score>=50?'#f97316':'#f87171';
-  return React.createElement('div',{className:'score-bar'},
-    React.createElement('div',{className:'score-fill',style:{width:`${score}%`,background:col}})
-  );
+// ── UI atoms ──────────────────────────────────────────────────────────────────
+function Badge({s}){
+  const m={pass:'bp',partial:'bpa',fail:'bf',missing:'bm',not_applicable:'bi'};
+  return R('span',{className:`badge ${m[s]||'bm'}`},s?.toUpperCase());
 }
-
-function Expander({title, subtitle, badge, children, defaultOpen=false}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return React.createElement('div',{className:'expander'},
-    React.createElement('div',{className:'exp-header',onClick:()=>setOpen(!open)},
-      React.createElement('div',{style:{display:'flex',alignItems:'center',gap:10}},
-        badge, React.createElement('span',{style:{fontWeight:500}},title),
-        subtitle && React.createElement('span',{style:{color:'var(--text3)',fontSize:12}},subtitle)
+function SBar({score}){
+  const col=score>=90?'var(--green)':score>=70?'var(--amber)':score>=50?'#f97316':'var(--red)';
+  return R('div',{className:'sbar'},R('div',{className:'sfill',style:{width:`${score}%`,background:col}}));
+}
+function Exp({title,sub,badge,children,open0=false}){
+  const [o,sO]=useState(open0);
+  return R('div',{className:'expdr'},
+    R('div',{className:'exph',onClick:()=>sO(!o)},
+      R('div',{style:{display:'flex',alignItems:'center',gap:9,flex:1,minWidth:0}},
+        badge,
+        R('span',{style:{fontWeight:500,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},title),
+        sub&&R('span',{style:{color:'var(--text3)',fontSize:12,flexShrink:0,marginLeft:8}},sub)
       ),
-      React.createElement('span',{className:`exp-arrow${open?' open':''}`},'▾')
+      R('span',{className:`expa${o?' op':''}`},'▾')
     ),
-    open && React.createElement('div',{className:'exp-body'},children)
+    o&&R('div',{className:'expb'},children)
   );
 }
-
-function CheckRow({check}) {
-  return React.createElement('div',{className:'check-row'},
-    React.createElement('div',{className:`check-icon ${check.passed?'check-ok':'check-fail'}`},check.passed?'✓':'✗'),
-    React.createElement('div',{},
-      React.createElement('div',{style:{fontWeight:500}},check.description),
-      React.createElement('div',{style:{color:'var(--text3)',fontSize:12,marginTop:2}},
-        `Expected: ${check.expected||'—'} · Actual: ${check.actual||'—'}`,
-        check.detail && React.createElement('span',{style:{color:'var(--amber)',marginLeft:6}},check.detail)
+function CRow({c}){
+  return R('div',{className:'crow'},
+    R('div',{className:`cico ${c.passed?'cok':'cfl'}`},c.passed?'✓':'✗'),
+    R('div',{style:{flex:1}},
+      R('div',{style:{fontWeight:500}},c.description),
+      R('div',{style:{color:'var(--text3)',fontSize:12,marginTop:2}},
+        `Expected: ${c.expected||'—'} · Actual: ${c.actual||'—'}`,
+        c.detail&&R('span',{style:{color:'var(--amber)',marginLeft:6}},c.detail)
       )
     )
   );
 }
 
-// ── Run Panel ─────────────────────────────────────────────────────────────────
-function RunPanel({onRun, running, progress}) {
-  const [cfg, setCfg] = useState({
-    github_repo:'adarshray416/GRC',
-    github_token:'',
-    local_path:'D:/files/backend/evidence_store/evidence',
-    controls_frameworks:['ISO27001','SOC2','GDPR']
+// ── Banners ───────────────────────────────────────────────────────────────────
+function OffBanner({vis,retry}){
+  return R('div',{className:`banner banner-off ${vis?'vis':'hid'}`},
+    R('div',{className:'boff-inner'},
+      R('div',{className:'boff-icon'},'✕'),
+      R('div',{style:{flex:1}},
+        R('div',{className:'boff-title'},`Backend offline — cannot reach ${API || window.location.host}`),
+        R('div',{className:'boff-steps'},
+          R('div',null,'Start the backend using one of these options, then Retry:'),
+          R('div',null,'  Windows: double-click ',R('code',null,'START_BACKEND.bat')),
+          R('div',null,'  PowerShell: right-click ',R('code',null,'START_BACKEND.ps1'),' → Run with PowerShell'),
+          R('div',null,'  Terminal: ',R('code',null,'cd backend && uvicorn main:app --host 0.0.0.0 --port 8000 --reload'))
+        )
+      ),
+      R('button',{className:'boff-retry',onClick:retry},'↻ Retry')
+    )
+  );
+}
+function OnFlash({vis}){
+  return R('div',{className:`banner banner-on ${vis?'vis':'hid'}`},
+    R('div',{className:'bon-inner'},
+      R('span',{style:{width:8,height:8,borderRadius:'50%',background:'var(--green)',display:'inline-block'}}),
+      'Backend connected'
+    )
+  );
+}
+
+// ── Run page ──────────────────────────────────────────────────────────────────
+function RunPage({run,running,progress,err,online,wsLive}){
+  const [cfg,setCfg]=useState({
+    github_repo:'adarshray416/GRC',github_token:'',
+    local_path:'D:\\Babcom\\GRC',controls_frameworks:['ISO27001','SOC2','GDPR']
   });
-  const fws = ['ISO27001','SOC2','GDPR'];
-  const toggleFw = fw => setCfg(c=>({...c,controls_frameworks:
+  const [uploads,setUploads] = useState([]);
+  const [uploadMsg,setUploadMsg] = useState('');
+  const [dragging,setDragging]   = useState(false);
+  const fws=['ISO27001','SOC2','GDPR'];
+  const tog=fw=>setCfg(c=>({...c,controls_frameworks:
     c.controls_frameworks.includes(fw)?c.controls_frameworks.filter(f=>f!==fw):[...c.controls_frameworks,fw]}));
+  const logRef=useRef(null);
+  useEffect(()=>{if(logRef.current) logRef.current.scrollTop=logRef.current.scrollHeight;},[progress]);
 
-  return React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,alignItems:'start'}},
-    React.createElement('div',{className:'card'},
-      React.createElement('div',{className:'section-title'},'Evidence Sources'),
-      React.createElement('div',{className:'form-group'},
-        React.createElement('label',{className:'form-label'},'GitHub Repository'),
-        React.createElement('input',{className:'form-input',value:cfg.github_repo,
-          onChange:e=>setCfg(c=>({...c,github_repo:e.target.value})),placeholder:'owner/repo'})
+  const handleFiles = async files=>{
+    if(!files.length) return;
+    setUploadMsg('Uploading…');
+    const res = await apiUpload(files);
+    if(res.ok){
+      setUploads(prev=>[...prev,...res.data.saved.map(f=>f.file)]);
+      setUploadMsg(`${res.data.saved.length} file(s) uploaded. ${res.data.rejected.length>0?`Rejected: ${res.data.rejected.join(', ')}`:''}`.trim());
+    } else {
+      setUploadMsg(`Upload failed: ${res.error}`);
+    }
+  };
+
+  const clearUploads = async()=>{
+    await apiFetch('/api/upload',{method:'DELETE'});
+    setUploads([]); setUploadMsg('Uploads cleared.');
+  };
+
+  const lc=l=>l.toLowerCase().includes('error')?'ll lerr':l.toLowerCase().includes('warn')?'ll lwrn':
+    (l.includes('✓')||l.includes('complete')||l.includes('Assessment complete'))?'ll lok':'ll';
+
+  return R('div',{className:'g2',style:{alignItems:'start'}},
+    // Left: config
+    R('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+      R('div',{className:'card'},
+        R('div',{className:'stitle'},'GitHub Source'),
+        R('div',{className:'fg'},R('label',{className:'fl'},'Repository'),
+          R('input',{className:'fi',value:cfg.github_repo,placeholder:'owner/repo',
+            onChange:e=>setCfg(c=>({...c,github_repo:e.target.value}))})),
+        R('div',{className:'fg'},R('label',{className:'fl'},'Token (optional — for private repos)'),
+          R('input',{className:'fi',type:'password',value:cfg.github_token,placeholder:'ghp_…',
+            onChange:e=>setCfg(c=>({...c,github_token:e.target.value}))}))
       ),
-      React.createElement('div',{className:'form-group'},
-        React.createElement('label',{className:'form-label'},'GitHub Token (optional — for private repos)'),
-        React.createElement('input',{className:'form-input',type:'password',value:cfg.github_token,
-          onChange:e=>setCfg(c=>({...c,github_token:e.target.value})),placeholder:'ghp_...'})
+      R('div',{className:'card'},
+        R('div',{className:'stitle'},'Local Path'),
+        R('div',{className:'fg'},R('label',{className:'fl'},'Evidence folder path'),
+          R('input',{className:'fi',value:cfg.local_path,placeholder:'D:\\Babcom\\GRC',
+            onChange:e=>setCfg(c=>({...c,local_path:e.target.value}))}))
       ),
-      React.createElement('div',{className:'form-group'},
-        React.createElement('label',{className:'form-label'},'Local Evidence Path'),
-        React.createElement('input',{className:'form-input',value:cfg.local_path,
-          onChange:e=>setCfg(c=>({...c,local_path:e.target.value})),placeholder:'D:\\Babcom\\GRC'})
-      ),
-      React.createElement('div',{className:'form-group'},
-        React.createElement('label',{className:'form-label'},'Frameworks'),
-        React.createElement('div',{style:{display:'flex',gap:8}},
-          fws.map(fw=>React.createElement('button',{key:fw,
-            className:`fw-tab${cfg.controls_frameworks.includes(fw)?' active':''}`,
-            onClick:()=>toggleFw(fw)},fw))
-        )
-      ),
-      React.createElement('button',{className:'btn btn-primary',style:{width:'100%'},
-        disabled:running,onClick:()=>onRun(cfg)},
-        running?React.createElement('span',null,React.createElement('span',{className:'pulse'}),'Running…'):'▶ Run Assessment')
-    ),
-    React.createElement('div',{className:'card'},
-      React.createElement('div',{className:'section-title'},'Pipeline Log'),
-      React.createElement('div',{className:'progress-log'},
-        progress.length===0
-          ? React.createElement('div',{className:'log-line',style:{color:'var(--text3)'}},
-              'Waiting to start…')
-          : progress.map((l,i)=>React.createElement('div',{key:i,
-              className:`log-line${l.includes('error')||l.includes('Error')?' err':l.includes('✓')||l.includes('complete')?' ok':''}`},
-              `› ${l}`))
-      )
-    )
-  );
-}
-
-// ── Dashboard Page ─────────────────────────────────────────────────────────────
-function Dashboard({report}) {
-  if (!report) return React.createElement('div',{className:'empty'},
-    React.createElement('div',{className:'empty-icon'},'🛡️'),
-    React.createElement('div',{className:'empty-title'},'No assessment data'),
-    React.createElement('div',null,'Configure sources and run an assessment to see results.')
-  );
-
-  const s = report.summary;
-  const controls = report.controls || [];
-  const byFw = s.by_framework || {};
-
-  const riskColor = {Low:'var(--green)',Medium:'var(--amber)',High:'var(--red)',Critical:'var(--red)'}[s.risk_level]||'var(--text2)';
-
-  return React.createElement('div',{},
-    // KPI row
-    React.createElement('div',{className:'grid-4',style:{marginBottom:20}},
-      [{label:'Compliance Score',val:`${s.overall_score}%`,sub:'Overall',color:s.overall_score>=90?'var(--green)':s.overall_score>=70?'var(--amber)':'var(--red)'},
-       {label:'Risk Level',val:s.risk_level,sub:'Current exposure',color:riskColor},
-       {label:'Controls Passed',val:s.pass||0,sub:`of ${s.total_controls} total`,color:'var(--green)'},
-       {label:'Issues Found',val:(s.fail||0)+(s.partial||0),sub:`${s.missing||0} missing evidence`,color:'var(--amber)'},
-      ].map(k=>React.createElement('div',{key:k.label,className:'card kpi'},
-        React.createElement('div',{className:'kpi-label'},k.label),
-        React.createElement('div',{className:'kpi-val',style:{color:k.color}},k.val),
-        React.createElement('div',{className:'kpi-sub'},k.sub)
-      ))
-    ),
-
-    // Score bar
-    React.createElement('div',{className:'card',style:{marginBottom:20}},
-      React.createElement('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:8}},
-        React.createElement('span',{style:{fontSize:13,fontWeight:500}},'Overall compliance score'),
-        React.createElement('span',{style:{fontSize:13,fontWeight:700}},`${s.overall_score}%`)
-      ),
-      React.createElement(ScoreBar,{score:s.overall_score})
-    ),
-
-    // Per-framework breakdown
-    React.createElement('div',{className:'section-title'},'Framework Breakdown'),
-    React.createElement('div',{className:'grid-3',style:{marginBottom:20}},
-      Object.entries(byFw).map(([fw,d])=>React.createElement('div',{key:fw,className:'card'},
-        React.createElement('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:8}},
-          React.createElement('span',{style:{fontWeight:600}},fw),
-          React.createElement('span',{style:{fontSize:13,color:d.score>=80?'var(--green)':d.score>=60?'var(--amber)':'var(--red)',fontWeight:700}},`${d.score}%`)
+      R('div',{className:'card'},
+        R('div',{className:'stitle'},'Upload Evidence Files'),
+        R('div',{
+          className:`dropzone${dragging?' drag':''}`,
+          onDragOver:e=>{e.preventDefault();setDragging(true)},
+          onDragLeave:()=>setDragging(false),
+          onDrop:e=>{e.preventDefault();setDragging(false);handleFiles([...e.dataTransfer.files])},
+        },
+          R('input',{type:'file',multiple:true,accept:'.txt,.pdf,.csv,.log,.json,.md',
+            onChange:e=>handleFiles([...e.target.files])}),
+          R('div',{className:'dropzone-icon'},'📂'),
+          R('div',{className:'dropzone-label'},'Drop files here or click to browse'),
+          R('div',{className:'dropzone-hint'},'.txt · .pdf · .csv · .log · .json · .md')
         ),
-        React.createElement(ScoreBar,{score:d.score}),
-        React.createElement('div',{style:{display:'flex',gap:8,marginTop:10,flexWrap:'wrap'}},
-          ['pass','partial','fail','missing'].map(st=>d[st]>0&&React.createElement('span',{key:st,className:`badge badge-${st}`},`${d[st]} ${st}`))
-        )
-      ))
-    ),
-
-    // Controls summary table
-    React.createElement('div',{className:'card'},
-      React.createElement('div',{className:'section-title'},'Control Status'),
-      React.createElement('table',{className:'table'},
-        React.createElement('thead',null,React.createElement('tr',null,
-          ['Control ID','Name','Framework','Status','Score','Checks'].map(h=>React.createElement('th',{key:h},h))
-        )),
-        React.createElement('tbody',null,
-          controls.map(c=>React.createElement('tr',{key:c.control_id},
-            React.createElement('td',null,React.createElement('code',{style:{fontSize:11,color:'var(--blue)'}},c.control_id)),
-            React.createElement('td',null,c.control_name),
-            React.createElement('td',null,React.createElement('span',{className:'pill'},c.framework)),
-            React.createElement('td',null,React.createElement(StatusBadge,{status:c.status})),
-            React.createElement('td',null,
-              React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8}},
-                React.createElement('span',{style:{fontWeight:600,minWidth:36}},`${c.score}%`),
-                React.createElement('div',{style:{flex:1,height:4,background:'var(--bg3)',borderRadius:2}},
-                  React.createElement('div',{style:{width:`${c.score}%`,height:'100%',background:c.score>=90?'var(--green)':c.score>=60?'var(--amber)':'var(--red)',borderRadius:2}})
-                )
-              )
-            ),
-            React.createElement('td',null,`${c.passed_checks}/${c.total_checks}`)
+        uploads.length>0&&R('div',{style:{marginTop:10}},
+          uploads.map((f,i)=>R('span',{key:i,className:'file-chip'},
+            R('span',null,f),
+            R('button',{onClick:clearUploads},'×')
           ))
+        ),
+        uploadMsg&&R('div',{style:{fontSize:12,color:'var(--green)',marginTop:8}},uploadMsg)
+      ),
+      R('div',{className:'card'},
+        R('div',{className:'stitle'},'Frameworks'),
+        R('div',{style:{display:'flex',gap:8}},
+          fws.map(fw=>R('button',{key:fw,className:`ftab${cfg.controls_frameworks.includes(fw)?' act':''}`,
+            onClick:()=>tog(fw)},fw))
         )
+      ),
+      err&&R('div',{style:{background:'var(--rbg)',border:'1px solid var(--red)',borderRadius:'var(--rsm)',
+        padding:'10px 14px',fontSize:12,color:'var(--red)'}},`Error: ${err}`),
+      R('button',{className:'btn btn-p',style:{width:'100%'},disabled:running||!online,onClick:()=>run(cfg)},
+        running?R('span',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:8}},
+          R('span',{className:'spin'}),'Running…')
+          :!online?'⚠ Backend offline':'▶  Run Assessment')
+    ),
+    // Right: log
+    R('div',{className:'card'},
+      R('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}},
+        R('div',{className:'stitle',style:{margin:0}},'Pipeline Log'),
+        R('div',{style:{display:'flex',alignItems:'center',gap:6,fontSize:11,color:'var(--text3)'}},
+          R('span',{className:`ws-dot ${wsLive?'ws-live':'ws-off'}`}),
+          wsLive?'Live stream':'Polling')
+      ),
+      R('div',{className:'plog',ref:logRef},
+        progress.length===0
+          ?R('div',{style:{color:'var(--text3)',fontFamily:'monospace',fontSize:12}},
+              online?'› Ready. Configure sources and click Run Assessment.':'› Waiting for backend…')
+          :progress.map((l,i)=>R('div',{key:i,className:lc(l)},`› ${l}`))
+      ),
+      R('div',{style:{marginTop:8,fontSize:11,color:'var(--text3)'}},`${API}  ·  checks every 4s`)
+    )
+  );
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function Dashboard({report,online}){
+  const sched = useScheduler();
+  if(!report) return R('div',{className:'empty'},R('div',{className:'eico'},'🛡️'),R('div',{className:'etitle'},'Run an assessment first'));
+  const s=report.summary,ctrl=report.controls||[],byFw=s.by_framework||{};
+  const rc={Low:'var(--green)',Medium:'var(--amber)',High:'var(--red)',Critical:'var(--red)'}[s.risk_level]||'var(--text2)';
+  return R('div',null,
+    R('div',{className:'g4',style:{marginBottom:16}},
+      [{l:'Compliance Score',v:`${s.overall_score}%`,c:s.overall_score>=90?'var(--green)':s.overall_score>=70?'var(--amber)':'var(--red)',sb:'Overall'},
+       {l:'Risk Level',v:s.risk_level,c:rc,sb:'Current posture'},
+       {l:'Controls Passed',v:s.pass||0,c:'var(--green)',sb:`of ${s.total_controls}`},
+       {l:'Issues',v:(s.fail||0)+(s.partial||0),c:'var(--amber)',sb:`${s.missing||0} missing evidence`},
+      ].map(k=>R('div',{key:k.l,className:'card kpi'},R('div',{className:'klbl'},k.l),R('div',{className:'kval',style:{color:k.c}},k.v),R('div',{className:'ksub'},k.sb)))
+    ),
+    R('div',{className:'card',style:{marginBottom:16}},
+      R('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:7}},
+        R('span',{style:{fontSize:13,fontWeight:500}},'Overall score'),R('span',{style:{fontWeight:700}},`${s.overall_score}%`)),
+      R(SBar,{score:s.overall_score})
+    ),
+    // Scheduler status
+    sched&&R('div',{className:'sched-card',style:{marginBottom:16}},
+      R('div',{className:'sched-icon'},'⏰'),
+      R('div',{style:{flex:1}},
+        R('div',{style:{fontWeight:500,fontSize:13}},'Scheduled Assessment'),
+        R('div',{style:{fontSize:12,color:'var(--text2)',marginTop:2}},sched.schedule),
+        sched.next_run&&R('div',{style:{fontSize:11,color:'var(--text3)',marginTop:2}},`Next run: ${sched.next_run.slice(0,19).replace('T',' ')} UTC`)
+      ),
+      online&&R('button',{className:'btn btn-o',style:{fontSize:12},
+        onClick:async()=>await apiFetch('/api/scheduler/run-now',{method:'POST'})},'Run now')
+    ),
+    R('div',{className:'stitle'},'Framework Breakdown'),
+    R('div',{className:'g3',style:{marginBottom:16}},
+      Object.entries(byFw).map(([fw,d])=>R('div',{key:fw,className:'card'},
+        R('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:7}},
+          R('span',{style:{fontWeight:600}},fw),
+          R('span',{style:{fontWeight:700,color:d.score>=80?'var(--green)':d.score>=60?'var(--amber)':'var(--red)'}},`${d.score}%`)),
+        R(SBar,{score:d.score}),
+        R('div',{style:{display:'flex',gap:6,marginTop:9,flexWrap:'wrap'}},
+          ['pass','partial','fail','missing'].map(st=>d[st]>0&&R('span',{key:st,className:`badge ${{pass:'bp',partial:'bpa',fail:'bf',missing:'bm'}[st]}`},`${d[st]} ${st}`)))
+      ))
+    ),
+    R('div',{className:'card'},
+      R('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}},
+        R('div',{className:'stitle',style:{margin:0}},'All Controls'),
+        R('a',{href:`${API}/api/report/export`,target:'_blank',
+          style:{display:'flex',alignItems:'center',gap:6,padding:'6px 14px',borderRadius:'var(--rsm)',
+            background:'var(--gbg)',border:'1px solid var(--green)',color:'var(--green)',
+            fontSize:12,fontWeight:600,textDecoration:'none'}},
+          '⬇  Download PDF Report')
+      ),
+      R('table',{className:'tbl'},
+        R('thead',null,R('tr',null,['ID','Name','Framework','Status','Score','Checks'].map(h=>R('th',{key:h},h)))),
+        R('tbody',null,ctrl.map(c=>R('tr',{key:c.control_id},
+          R('td',null,R('code',{style:{fontSize:11,color:'var(--blue)'}},c.control_id)),
+          R('td',null,c.control_name),
+          R('td',null,R('span',{className:'pill'},c.framework)),
+          R('td',null,R(Badge,{s:c.status})),
+          R('td',null,R('div',{style:{display:'flex',alignItems:'center',gap:7}},
+            R('span',{style:{fontWeight:600,minWidth:34}},`${c.score}%`),
+            R('div',{style:{flex:1,height:4,background:'var(--bg3)',borderRadius:2}},
+              R('div',{style:{width:`${c.score}%`,height:'100%',borderRadius:2,
+                background:c.score>=90?'var(--green)':c.score>=60?'var(--amber)':'var(--red)'}})))),
+          R('td',null,`${c.passed_checks}/${c.total_checks}`)
+        )))
       )
     )
   );
 }
 
-// ── Controls Page ─────────────────────────────────────────────────────────────
-function Controls({report}) {
-  const [fw, setFw] = useState('ALL');
-  const [statusF, setStatusF] = useState('ALL');
-  if (!report) return React.createElement('div',{className:'empty'},
-    React.createElement('div',{className:'empty-icon'},'🔍'),
-    React.createElement('div',{className:'empty-title'},'Run an assessment first'));
-
-  const controls = report.controls || [];
-  const frameworks = ['ALL',...new Set(controls.map(c=>c.framework))];
-  const statuses   = ['ALL','pass','partial','fail','missing'];
-  const filtered   = controls.filter(c=>(fw==='ALL'||c.framework===fw)&&(statusF==='ALL'||c.status===statusF));
-
-  return React.createElement('div',null,
-    React.createElement('div',{style:{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}},
-      frameworks.map(f=>React.createElement('button',{key:f,className:`fw-tab${fw===f?' active':''}`,onClick:()=>setFw(f)},f)),
-      React.createElement('div',{style:{marginLeft:'auto',display:'flex',gap:6}},
-        statuses.map(st=>React.createElement('button',{key:st,
-          className:`fw-tab${statusF===st?' active':''}`,onClick:()=>setStatusF(st)},st))
-      )
+// ── Controls page ─────────────────────────────────────────────────────────────
+function Controls({report}){
+  const [fw,sF]=useState('ALL');const [st,sSt]=useState('ALL');
+  if(!report) return R('div',{className:'empty'},R('div',{className:'eico'},'🔍'),R('div',{className:'etitle'},'Run an assessment first'));
+  const ctrl=report.controls||[];
+  const fws=['ALL',...new Set(ctrl.map(c=>c.framework))];
+  const sts=['ALL','pass','partial','fail','missing'];
+  const filt=ctrl.filter(c=>(fw==='ALL'||c.framework===fw)&&(st==='ALL'||c.status===st));
+  return R('div',null,
+    R('div',{style:{display:'flex',gap:7,marginBottom:14,flexWrap:'wrap',alignItems:'center'}},
+      R('span',{style:{fontSize:12,color:'var(--text3)'}},'Framework:'),fws.map(f=>R('button',{key:f,className:`ftab${fw===f?' act':''}`,onClick:()=>sF(f)},f)),
+      R('span',{style:{fontSize:12,color:'var(--text3)',marginLeft:10}},'Status:'),sts.map(s=>R('button',{key:s,className:`ftab${st===s?' act':''}`,onClick:()=>sSt(s)},s))
     ),
-    React.createElement('div',{style:{fontSize:13,color:'var(--text2)',marginBottom:16}},
-      `Showing ${filtered.length} of ${controls.length} controls`
-    ),
-    filtered.map(ctrl=>React.createElement(Expander,{
-      key:ctrl.control_id,
-      title:`${ctrl.control_id}  —  ${ctrl.control_name}`,
-      badge:React.createElement(StatusBadge,{status:ctrl.status}),
-      subtitle:`${ctrl.score}%  ·  ${ctrl.passed_checks}/${ctrl.total_checks} checks`,
-      defaultOpen:ctrl.status==='fail'||ctrl.status==='missing'
-    },
-      React.createElement('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16,marginBottom:12}},
-        React.createElement('div',null,
-          React.createElement('div',{style:{fontSize:12,color:'var(--text2)',marginBottom:4}},
-            `Framework: ${ctrl.framework_ref||ctrl.framework}`),
-          ctrl.evidence_files?.length>0 && React.createElement('div',{style:{fontSize:12,color:'var(--text3)',marginBottom:8}},
-            `Evidence: ${ctrl.evidence_files.join(', ')}`),
-          ctrl.recommendation && React.createElement('div',{style:{background:'var(--amber-bg)',border:'1px solid var(--amber)',borderRadius:6,padding:'8px 12px',fontSize:12,color:'var(--amber)'}},
-            `💡 ${ctrl.recommendation}`)
+    R('div',{style:{fontSize:12,color:'var(--text2)',marginBottom:12}},`${filt.length} of ${ctrl.length} controls`),
+    filt.map(c=>R(Exp,{key:c.control_id,
+      title:`${c.control_id}  —  ${c.control_name}`,
+      badge:R(Badge,{s:c.status}),sub:`${c.score}%  ·  ${c.passed_checks}/${c.total_checks}`,
+      open0:c.status==='fail'||c.status==='missing'},
+      R('div',{style:{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14,marginBottom:12}},
+        R('div',null,
+          R('div',{style:{fontSize:12,color:'var(--text2)',marginBottom:5}},`Ref: ${c.framework_ref||c.framework}`),
+          c.evidence_files?.length>0&&R('div',{style:{fontSize:12,color:'var(--text3)',marginBottom:7}},`Evidence: ${c.evidence_files.join(', ')}`),
+          c.recommendation&&R('div',{style:{background:'var(--abg)',border:'1px solid #5a3a00',borderRadius:5,padding:'7px 12px',fontSize:12,color:'var(--amber)'}},`💡 ${c.recommendation}`)
         ),
-        React.createElement('div',{className:'card-sm',style:{textAlign:'center'}},
-          React.createElement('div',{style:{fontSize:28,fontWeight:700,color:ctrl.score>=90?'var(--green)':ctrl.score>=60?'var(--amber)':'var(--red)'}},`${ctrl.score}%`),
-          React.createElement('div',{style:{fontSize:12,color:'var(--text2)'}},`${ctrl.passed_checks}/${ctrl.total_checks} checks passed`)
+        R('div',{className:'card-sm',style:{textAlign:'center'}},
+          R('div',{style:{fontSize:24,fontWeight:700,color:c.score>=90?'var(--green)':c.score>=60?'var(--amber)':'var(--red)'}},`${c.score}%`),
+          R('div',{style:{fontSize:12,color:'var(--text2)',marginTop:3}},`${c.passed_checks}/${c.total_checks} passed`)
         )
       ),
-      ctrl.checks?.map((chk,i)=>React.createElement(CheckRow,{key:i,check:chk}))
+      c.checks?.map((chk,i)=>R(CRow,{key:i,c:chk}))
     ))
   );
 }
 
-// ── Evidence Page ─────────────────────────────────────────────────────────────
-function Evidence({report}) {
-  const [tab, setTab] = useState(null);
-  if (!report) return React.createElement('div',{className:'empty'},
-    React.createElement('div',{className:'empty-icon'},'📁'),
-    React.createElement('div',{className:'empty-title'},'Run an assessment first'));
-
-  const store   = report.evidence_store || {};
-  const types   = Object.keys(store);
-  const sources = report.sources || [];
-  const curTab  = tab || types[0];
-
-  const icons = {policy:'📄',risk:'⚠️',logs:'📋',access_review:'👤'};
-  const data  = store[curTab];
-
-  return React.createElement('div',null,
-    // Source chips
-    React.createElement('div',{className:'card',style:{marginBottom:20}},
-      React.createElement('div',{className:'section-title'},'Evidence Sources Loaded'),
-      React.createElement('div',{},
-        sources.length===0
-          ? React.createElement('span',{style:{color:'var(--text3)',fontSize:13}},'No sources')
-          : sources.map((s,i)=>React.createElement('span',{key:i,className:'source-chip'},
-              React.createElement('span',{className:'dot',style:{background:s.source?.startsWith('github')?'var(--blue)':'var(--green)'}}),
-              React.createElement('span',null,s.source?.startsWith('github')?'GitHub':'Local'),
-              React.createElement('span',{style:{color:'var(--text)'}},s.file),
-              React.createElement('span',{style:{color:'var(--text3)'}},`[${s.type}]`)
-            ))
-      )
+// ── Evidence page ─────────────────────────────────────────────────────────────
+function Evidence({report}){
+  const [tab,sT]=useState(null);
+  if(!report) return R('div',{className:'empty'},R('div',{className:'eico'},'📁'),R('div',{className:'etitle'},'Run an assessment first'));
+  const store=report.evidence_store||{},types=Object.keys(store),sources=report.sources||[],cur=tab||types[0],data=store[cur];
+  const icons={policy:'📄',risk:'⚠️',logs:'📋',access_review:'👤'};
+  const srcColor=s=>s?.startsWith('github')?'var(--blue)':s?.startsWith('aws')?'var(--amber)':s?.startsWith('okta')?'var(--purple)':'var(--green)';
+  const srcLabel=s=>s?.startsWith('github')?'GitHub':s?.startsWith('aws')?'AWS':s?.startsWith('okta')?'Okta':'Local';
+  return R('div',null,
+    R('div',{className:'card',style:{marginBottom:16}},
+      R('div',{className:'stitle'},'Files loaded this run'),
+      sources.length===0?R('span',{style:{color:'var(--text3)',fontSize:13}},'None')
+        :sources.map((s,i)=>R('span',{key:i,className:'schip'},
+          R('span',{className:'d6',style:{background:srcColor(s.source)}}),
+          R('span',{style:{color:'var(--text3)'}},srcLabel(s.source)),
+          R('strong',null,s.file),R('span',{className:'pill'},s.type)
+        ))
     ),
-
-    // Type tabs
-    React.createElement('div',{style:{display:'flex',gap:8,marginBottom:16}},
-      types.map(t=>React.createElement('button',{key:t,
-        className:`fw-tab${curTab===t?' active':''}`,onClick:()=>setTab(t)},
-        `${icons[t]||''} ${t}`))
+    R('div',{style:{display:'flex',gap:7,marginBottom:14}},
+      types.map(t=>R('button',{key:t,className:`ftab${cur===t?' act':''}`,onClick:()=>sT(t)},`${icons[t]||''} ${t}`))
     ),
-
-    // Content
-    data && React.createElement('div',{className:'card'},
-      curTab==='policy' && React.createElement('div',null,
-        React.createElement('div',{className:'grid-2',style:{marginBottom:16}},
+    data&&R('div',{className:'card'},
+      cur==='policy'&&R('div',null,
+        R('div',{className:'g2',style:{gap:'10px 24px',marginBottom:14}},
           [['Name',data.name],['Version',data.version||'—'],['Approved by',data.approved_by||'—'],
            ['Approval date',data.approval_date||'—'],['Review date',data.review_date||'—'],
            ['Classification',data.classification||'—']
-          ].map(([k,v])=>React.createElement('div',{key:k},
-            React.createElement('div',{style:{fontSize:11,color:'var(--text3)',marginBottom:2}},k),
-            React.createElement('div',{style:{fontWeight:500}},v)
-          ))
+          ].map(([k,v])=>R('div',{key:k},R('div',{style:{fontSize:11,color:'var(--text3)',marginBottom:2}},k),R('div',{style:{fontWeight:500}},v)))
         ),
-        data.keywords_found?.length>0 && React.createElement('div',null,
-          React.createElement('div',{style:{fontSize:11,color:'var(--text3)',marginBottom:6}},'Keywords found'),
-          data.keywords_found.map(k=>React.createElement('span',{key:k,className:'pill',style:{marginRight:4}},k))
+        data.keywords_found?.length>0&&R('div',null,
+          R('div',{style:{fontSize:11,color:'var(--text3)',marginBottom:5}},'Keywords matched'),
+          data.keywords_found.map(k=>R('span',{key:k,className:'pill',style:{marginRight:4}},k))
         )
       ),
-
-      curTab==='risk' && React.createElement('div',null,
-        React.createElement('div',{style:{marginBottom:12,fontSize:13,color:'var(--text2)'}},
-          `${Array.isArray(data)?data.length:0} risk entries`),
-        (Array.isArray(data)?data:[]).map((r,i)=>React.createElement(Expander,{
-          key:i,title:`[${r.risk_id}] ${r.risk_description?.slice(0,70)}`,
-          badge:React.createElement('span',{className:'badge',style:{
-            background:{critical:'var(--red-bg)',high:'var(--red-bg)',medium:'var(--amber-bg)',low:'var(--green-bg)'}[r.impact]||'var(--bg3)',
+      cur==='risk'&&R('div',null,
+        R('div',{style:{fontSize:13,color:'var(--text2)',marginBottom:10}},`${Array.isArray(data)?data.length:0} risk entries`),
+        (Array.isArray(data)?data:[]).map((r,i)=>R(Exp,{key:i,
+          title:`[${r.risk_id}] ${r.risk_description?.slice(0,80)}`,
+          badge:R('span',{className:'badge',style:{
+            background:{critical:'var(--rbg)',high:'var(--rbg)',medium:'var(--abg)',low:'var(--gbg)'}[r.impact]||'var(--bg3)',
             color:{critical:'var(--red)',high:'var(--red)',medium:'var(--amber)',low:'var(--green)'}[r.impact]||'var(--text2)'
-          }},r.impact?.toUpperCase())
-        },
-          React.createElement('div',{className:'grid-2'},
-            [['Impact',r.impact],['Likelihood',r.likelihood],['Risk score',`${r.risk_score}/25`],
+          }},r.impact?.toUpperCase())},
+          R('div',{className:'g2',style:{gap:'8px 20px'}},
+            [['Impact',r.impact],['Likelihood',r.likelihood],['Score',`${r.risk_score}/25`],
              ['Owner',r.owner||'—'],['Status',r.status],['Mitigation',r.mitigation||'—']
-            ].map(([k,v])=>React.createElement('div',{key:k,style:{marginBottom:8}},
-              React.createElement('div',{style:{fontSize:11,color:'var(--text3)'}}),k,
-              React.createElement('div',{style:{fontWeight:500}},v)
-            ))
+            ].map(([k,v])=>R('div',{key:k},R('div',{style:{fontSize:11,color:'var(--text3)'}},k),R('div',{style:{fontWeight:500}},v)))
           )
         ))
       ),
-
-      curTab==='logs' && React.createElement('div',null,
-        React.createElement('div',{className:'grid-3',style:{marginBottom:16}},
-          [['Total entries',data.entry_count||0],['Coverage (days)',data.coverage_days??'—'],
-           ['Failure rate',`${((data.failure_rate||0)*100).toFixed(1)}%`]
-          ].map(([k,v])=>React.createElement('div',{key:k,style:{textAlign:'center'}},
-            React.createElement('div',{style:{fontSize:22,fontWeight:700,color:'var(--blue)'}},v),
-            React.createElement('div',{style:{fontSize:12,color:'var(--text2)'}},k)
-          ))
+      cur==='logs'&&R('div',null,
+        R('div',{className:'g3',style:{marginBottom:14,textAlign:'center'}},
+          [['Entries',data.entry_count||0],['Coverage (days)',data.coverage_days??'—'],['Failure rate',`${(((data.failure_rate||0)*100)).toFixed(1)}%`]]
+          .map(([k,v])=>R('div',{key:k},R('div',{style:{fontSize:22,fontWeight:700,color:'var(--blue)'}},v),R('div',{style:{fontSize:12,color:'var(--text2)',marginTop:2}},k)))
         ),
-        React.createElement('div',{className:'section-title'},'Recent entries'),
-        React.createElement('table',{className:'table'},
-          React.createElement('thead',null,React.createElement('tr',null,
-            ['Timestamp','User','Action','Outcome','Event'].map(h=>React.createElement('th',{key:h},h))
-          )),
-          React.createElement('tbody',null,
-            (data.entries||[]).slice(0,20).map((e,i)=>React.createElement('tr',{key:i},
-              React.createElement('td',null,React.createElement('code',{style:{fontSize:11}},e.timestamp||'—')),
-              React.createElement('td',null,e.user||'—'),
-              React.createElement('td',null,e.action||'—'),
-              React.createElement('td',null,e.outcome&&React.createElement('span',{
-                className:`badge ${e.outcome?.toLowerCase()==='success'?'badge-pass':'badge-fail'}`
-              },e.outcome)),
-              React.createElement('td',{style:{maxWidth:300,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:12,color:'var(--text2)'}},e.event)
-            ))
-          )
+        R('table',{className:'tbl'},
+          R('thead',null,R('tr',null,['Timestamp','User','Action','Outcome','Event'].map(h=>R('th',{key:h},h)))),
+          R('tbody',null,(data.entries||[]).slice(0,25).map((e,i)=>R('tr',{key:i},
+            R('td',null,R('code',{style:{fontSize:11}},e.timestamp||'—')),
+            R('td',null,e.user||'—'),R('td',null,e.action||'—'),
+            R('td',null,e.outcome&&R('span',{className:`badge ${e.outcome?.toLowerCase()==='success'?'bp':'bf'}`},e.outcome)),
+            R('td',{style:{maxWidth:240,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:12,color:'var(--text2)'}},e.event)
+          )))
         )
       ),
-
-      curTab==='access_review' && React.createElement('div',null,
-        React.createElement('div',{className:'grid-3',style:{marginBottom:16}},
-          [['Total accounts',(data.records||[]).length],
-           ['Privileged accounts',(data.records||[]).filter(r=>r.privileged).length],
-           ['Privileged without MFA',(data.records||[]).filter(r=>r.privileged&&!r.mfa_enabled).length]
-          ].map(([k,v])=>React.createElement('div',{key:k,style:{textAlign:'center'}},
-            React.createElement('div',{style:{fontSize:22,fontWeight:700,color:'var(--blue)'}},v),
-            React.createElement('div',{style:{fontSize:12,color:'var(--text2)'}},k)
-          ))
+      cur==='access_review'&&R('div',null,
+        R('div',{className:'g3',style:{marginBottom:14,textAlign:'center'}},
+          [['Total',(data.records||[]).length],['Privileged',(data.records||[]).filter(r=>r.privileged).length],
+           ['Priv / no MFA',(data.records||[]).filter(r=>r.privileged&&!r.mfa_enabled).length]]
+          .map(([k,v])=>R('div',{key:k},R('div',{style:{fontSize:22,fontWeight:700,color:'var(--blue)'}},v),R('div',{style:{fontSize:12,color:'var(--text2)',marginTop:2}},k)))
         ),
-        React.createElement('table',{className:'table'},
-          React.createElement('thead',null,React.createElement('tr',null,
-            ['User','Role','Status','Privileged','MFA','Last reviewed'].map(h=>React.createElement('th',{key:h},h))
-          )),
-          React.createElement('tbody',null,
-            (data.records||[]).map((r,i)=>React.createElement('tr',{key:i},
-              React.createElement('td',null,React.createElement('strong',null,r.user)),
-              React.createElement('td',null,r.role),
-              React.createElement('td',null,React.createElement('span',{
-                className:`badge ${r.status==='active'?'badge-pass':r.status==='revoked'?'badge-fail':'badge-partial'}`
-              },r.status)),
-              React.createElement('td',null,r.privileged?React.createElement('span',{className:'badge badge-purple'},'YES'):'—'),
-              React.createElement('td',null,r.mfa_enabled===true?React.createElement('span',{className:'badge badge-pass'},'✓'):
-                r.mfa_enabled===false?React.createElement('span',{className:'badge badge-fail'},'✗'):'—'),
-              React.createElement('td',null,r.last_reviewed||'—')
-            ))
-          )
+        R('table',{className:'tbl'},
+          R('thead',null,R('tr',null,['User','Role','Status','Priv','MFA','Last reviewed'].map(h=>R('th',{key:h},h)))),
+          R('tbody',null,(data.records||[]).map((r,i)=>R('tr',{key:i},
+            R('td',null,R('strong',null,r.user)),R('td',null,r.role),
+            R('td',null,R('span',{className:`badge ${{active:'bp',revoked:'bf',suspended:'bpa'}[r.status]||'bm'}`},r.status)),
+            R('td',null,r.privileged?R('span',{className:'badge bpu'},'YES'):'—'),
+            R('td',null,r.mfa_enabled===true?R('span',{className:'badge bp'},'✓'):r.mfa_enabled===false?R('span',{className:'badge bf'},'✗'):'—'),
+            R('td',null,r.last_reviewed||'—')
+          )))
         )
       )
     )
   );
 }
 
-// ── App ───────────────────────────────────────────────────────────────────────
-function App() {
-  const [page, setPage] = useState('run');
-  const {report, running, progress, startAssessment} = useReport();
-
-  const pages = [
-    {id:'run',   label:'Run'},
-    {id:'dash',  label:'Dashboard'},
-    {id:'ctrl',  label:'Controls'},
-    {id:'evid',  label:'Evidence'},
-  ];
-
-return React.createElement('div',{id:'root'},
-  React.createElement('nav',{className:'nav'},
-    React.createElement('div',{className:'nav-logo'},
-      React.createElement('img', {
-        src: 'D:/GRC_V4/babcom.png',   // <-- your logo path
-        alt: 'BABCOM Logo',
-        className: 'logo-img'
-      }),
-    ),
-      React.createElement('div',{className:'nav-links'},
-        pages.map(p=>React.createElement('button',{
-          key:p.id, className:`nav-link${page===p.id?' active':''}`,
-          onClick:()=>setPage(p.id)
-        },p.label)),
-        report && React.createElement('span',{className:'nav-badge'},`${report.summary.overall_score}%`)
+// ── App root ──────────────────────────────────────────────────────────────────
+function App(){
+  const [page,sPage]=useState('run');
+  const {st,flash,recheck}=useHealth();
+  const online=st==='online';
+  const {report,running,progress,err,run,wsLive}=useAssessment(online);
+  const connLabel=st==='online'?'Connected':st==='offline'?'Offline':'Connecting…';
+  const connDot  =st==='online'?'c-ok':st==='offline'?'c-err':'c-chk';
+  const navItems=[{id:'run',l:'Run'},{id:'dash',l:'Dashboard'},{id:'ctrl',l:'Controls'},{id:'evid',l:'Evidence'}];
+  return R('div',{id:'root'},
+    R(OffBanner,{vis:st==='offline',retry:recheck}),
+    R(OnFlash,{vis:flash}),
+    R('nav',{className:'nav'},
+      R('div',{className:'logo-img'},
+      R('img',{
+        src:'../babcom.png',  
+        alt:'BABCOM Logo',
+        className:'logo-img'
+      }),),
+      R('div',{className:'nav-links'},
+        navItems.map(p=>R('button',{key:p.id,className:`nbtn${page===p.id?' act':''}`,onClick:()=>sPage(p.id)},p.l)),
+        report&&R('span',{className:'nav-score'},`${report.summary.overall_score}%`),
+        R('span',{className:'conn'},R('span',{className:`cdot ${connDot}`}),connLabel)
       )
     ),
-    React.createElement('main',{className:'main'},
-      page==='run' && React.createElement('div',null,
-        React.createElement('h1',{className:'page-title'},'Assessment Configuration'),
-        React.createElement('p',{className:'page-sub'},'Connect to your GitHub repo and local path, then run the GRC engine'),
-        React.createElement(RunPanel,{onRun:startAssessment,running,progress})
+    R('main',{className:'main'},
+      page==='run'&&R('div',null,
+        R('h1',{className:'ptitle'},'Assessment Configuration'),
+        R('p',{className:'psub'},'Connect evidence sources, upload files, select frameworks'),
+        R(RunPage,{run,running,progress,err,online,wsLive})
       ),
-      page==='dash' && React.createElement('div',null,
-        React.createElement('h1',{className:'page-title'},'Compliance Dashboard'),
-        React.createElement('p',{className:'page-sub'},'Real-time compliance posture across all frameworks'),
-        React.createElement(Dashboard,{report})
+      page==='dash'&&R('div',null,
+        R('h1',{className:'ptitle'},'Compliance Dashboard'),
+        R('p',{className:'psub'},'Real-time posture across ISO 27001 · SOC 2 · GDPR'),
+        R(Dashboard,{report,online})
       ),
-      page==='ctrl' && React.createElement('div',null,
-        React.createElement('h1',{className:'page-title'},'Control Findings'),
-        React.createElement('p',{className:'page-sub'},'Detailed model-based validation results per control'),
-        React.createElement(Controls,{report})
+      page==='ctrl'&&R('div',null,
+        R('h1',{className:'ptitle'},'Control Findings'),
+        R('p',{className:'psub'},'Model-based check results with per-check drill-down'),
+        R(Controls,{report})
       ),
-      page==='evid' && React.createElement('div',null,
-        React.createElement('h1',{className:'page-title'},'Evidence Inspector'),
-        React.createElement('p',{className:'page-sub'},'Canonical data extracted from GitHub and local sources'),
-        React.createElement(Evidence,{report})
+      page==='evid'&&R('div',null,
+        R('h1',{className:'ptitle'},'Evidence Inspector'),
+        R('p',{className:'psub'},'Canonical data extracted from all sources'),
+        R(Evidence,{report})
       )
     )
   );
 }
-
-ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root')).render(R(App));
 </script>
 </body>
 </html>
