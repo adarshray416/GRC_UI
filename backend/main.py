@@ -32,7 +32,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import FastAPI, BackgroundTasks, HTTPException, UploadFile, File, Query
+from fastapi import FastAPI, BackgroundTasks, HTTPException, UploadFile, File, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -58,7 +58,7 @@ _state: dict = {
 _last_run_config: dict = {
     "github_repo":          "adarshray416/GRC",
     "github_token":         None,
-    "local_path":           r"D:\files\backend\evidence_store\evidence",
+    "local_path":           r"D:\Babcom\GRC",
     "controls_frameworks":  ["ISO27001", "SOC2", "GDPR"],
     "alert_threshold":      80,
     "schedule_hour":        2,
@@ -67,6 +67,29 @@ _last_run_config: dict = {
 
 
 # ── Lifespan (startup / shutdown) ────────────────────────────────────────────
+
+# ── WebSocket connection manager ──────────────────────────────────────────────
+class _WSManager:
+    def __init__(self):
+        self.active: list = []
+
+    async def connect(self, ws: WebSocket):
+        await ws.accept()
+        self.active.append(ws)
+
+    def disconnect(self, ws: WebSocket):
+        self.active = [w for w in self.active if w is not ws]
+
+    async def broadcast(self, msg: str):
+        for ws in list(self.active):
+            try:
+                await ws.send_text(msg)
+            except Exception:
+                self.disconnect(ws)
+
+_ws_manager = _WSManager()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("BABCOM GRC Backend starting…")
@@ -97,7 +120,7 @@ app.add_middleware(
 class RunRequest(BaseModel):
     github_repo:           str       = "adarshray416/GRC"
     github_token:          Optional[str] = None
-    local_path:            str       = r"D:\files\backend\evidence_store\evidence"
+    local_path:            str       = r"D:\Babcom\GRC"
     controls_frameworks:   List[str] = ["ISO27001", "SOC2", "GDPR"]
     alert_threshold:       int       = 80
 
@@ -106,6 +129,14 @@ class RunRequest(BaseModel):
 def _log(msg: str):
     _state["progress"].append(msg)
     log.info(msg)
+    # Broadcast to any connected WebSocket clients
+    import asyncio
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.ensure_future(_ws_manager.broadcast(msg))
+    except Exception:
+        pass
 
 
 # ── Core pipeline (runs in background) ───────────────────────────────────────
@@ -442,8 +473,47 @@ async def scheduler_run_now(background_tasks: BackgroundTasks):
     req = RunRequest(
         github_repo          = _last_run_config.get("github_repo", "adarshray416/GRC"),
         github_token         = _last_run_config.get("github_token"),
-        local_path           = _last_run_config.get("local_path", r"D:\files\backend\evidence_store\evidence"),
+        local_path           = _last_run_config.get("local_path", r"D:\Babcom\GRC"),
         controls_frameworks  = _last_run_config.get("controls_frameworks", ["ISO27001"]),
     )
     background_tasks.add_task(_run_pipeline, req)
     return {"message": "Immediate assessment triggered"}
+
+
+# ── WebSocket: live log stream ────────────────────────────────────────────────
+@app.websocket("/ws/logs")
+async def websocket_logs(websocket: WebSocket):
+    """
+    Connect to receive real-time assessment log lines as they happen.
+    Replays the last 50 progress lines on connect, then streams new ones.
+
+    JavaScript usage:
+        const ws = new WebSocket("ws://localhost:8000/ws/logs");
+        ws.onmessage = e => console.log(e.data);
+    """
+    await _ws_manager.connect(websocket)
+    # Replay existing progress so client catches up if assessment already running
+    for line in _state["progress"][-50:]:
+        try:
+            await websocket.send_text(line)
+        except Exception:
+            break
+    try:
+        while True:
+            # Keep connection alive — client can send "ping", we reply "pong"
+            data = await websocket.receive_text()
+            if data == "ping":
+                await websocket.send_text("pong")
+    except WebSocketDisconnect:
+        _ws_manager.disconnect(websocket)
+
+
+# ── Serve frontend static files ───────────────────────────────────────────────
+# Mounts frontend/index.html at / so the whole app is served from one URL.
+# Works for Railway, Docker, and any single-domain deployment.
+# In local dev you can just open frontend/index.html directly instead.
+import os as _os
+_frontend_dir = _os.path.join(_os.path.dirname(__file__), "frontend")
+if _os.path.isdir(_frontend_dir):
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
