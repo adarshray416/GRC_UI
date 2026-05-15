@@ -1,7 +1,7 @@
 """
 connectors/local_connector.py
 Scans a local directory for evidence files.
-Default path: D:\\Babcom\\GRC  (Windows) or ~/GRC (Linux/Mac fallback).
+Default path: D:\GRC_V4\GRC  (Windows) or ~/GRC (Linux/Mac fallback).
 """
 from __future__ import annotations
 

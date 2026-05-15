@@ -83,9 +83,26 @@ class GitHubConnector:
         """Download file content and save to tmp_dir. Returns local path."""
         try:
             detail = self._get(item["url"])
-            content_b64 = detail.get("content", "")
-            content_b64 = content_b64.replace("\n", "")
-            content = base64.b64decode(content_b64)
+            content_b64 = detail.get("content")
+            if content_b64:
+                content_b64 = content_b64.replace("\n", "")
+                content = base64.b64decode(content_b64)
+            elif detail.get("download_url"):
+                url = detail["download_url"]
+                r = requests.get(url, headers=self.headers, timeout=15)
+                r.raise_for_status()
+                content = r.content
+            else:
+                raise ValueError("GitHub API returned no file content.")
+
+            # Detect Git LFS pointer files and try raw download if possible.
+            if content.startswith(b"version https://git-lfs.github.com/spec/v1"):
+                download_url = detail.get("download_url")
+                if not download_url:
+                    raise ValueError("Git LFS pointer file detected; raw download URL unavailable.")
+                r = requests.get(download_url, headers=self.headers, timeout=15)
+                r.raise_for_status()
+                content = r.content
 
             safe_name = item["path"].replace("/", "_").replace("\\", "_")
             local_path = os.path.join(tmp_dir, safe_name)

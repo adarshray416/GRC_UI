@@ -7,6 +7,28 @@ def parse_txt(path: str) -> str:
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         return f.read()
 
+def _parse_pdf_with_pypdf(path: str) -> str:
+    try:
+        try:
+            import pypdf as pdf_module
+        except ImportError:
+            import PyPDF2 as pdf_module
+        reader = pdf_module.PdfReader(path)
+        texts = []
+        for page in reader.pages:
+            try:
+                t = page.extract_text()
+            except Exception:
+                t = None
+            if t:
+                texts.append(t)
+        return "\n".join(texts)
+    except ImportError:
+        raise
+    except Exception:
+        return ""
+
+
 def parse_pdf(path: str) -> str:
     try:
         import pdfplumber
@@ -15,9 +37,19 @@ def parse_pdf(path: str) -> str:
             for page in pdf.pages:
                 t = page.extract_text()
                 if t: parts.append(t)
-        return "\n".join(parts)
+        text = "\n".join(parts)
+        if text.strip():
+            return text
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    try:
+        return _parse_pdf_with_pypdf(path)
     except ImportError:
         return f"[pdfplumber not installed — cannot parse {path}]"
+
 
 def parse_csv(path: str) -> str:
     """Convert CSV to readable text so existing extractors can process it."""
