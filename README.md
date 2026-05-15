@@ -1,15 +1,15 @@
-# BABCOM GRC Platform v2
+# BABCOM GRC Platform
 
 **FastAPI backend + React frontend + GitHub scraper + Local path watcher**
 
-Evidence pushed to `adarshray416/GRC` or dropped in `D:\Babcom\GRC` is automatically scraped, parsed, and evaluated against ISO 27001, SOC 2, and GDPR controls.
+Evidence pushed to `adarshray416/GRC` or dropped in `D:\GRC_V4\GRC` is automatically scraped, parsed, and evaluated against ISO 27001, SOC 2, and GDPR controls.
 
 ---
 
 ## Architecture
 
 ```
-GitHub Repo (adarshray416/GRC)       D:\Babcom\GRC (local)
+GitHub Repo (adarshray416/GRC)       D:\GRC_V4\GRC (local)
          │                                    │
          └──────── GitHubConnector ───────────┘
                           │
@@ -45,7 +45,7 @@ Open `frontend/index.html` in your browser (no build step needed).
 
 ### 3. Run an assessment
 - Set your GitHub repo: `adarshray416/GRC`
-- Set local path: `D:\Babcom\GRC`
+- Set local path: `D:\GRC_V4\GRC`
 - Select frameworks: ISO27001, SOC2, GDPR
 - Click **Run Assessment**
 
@@ -99,9 +99,9 @@ Then click **Run Assessment** — the backend fetches the latest files.
 
 ---
 
-## Local Evidence (D:\Babcom\GRC)
+## Local Evidence (D:\GRC_V4\GRC)
 
-Drop files anywhere in `D:\Babcom\GRC` (or subdirectories). The local connector scans recursively and picks up all `.txt`, `.pdf`, `.csv`, `.log` files.
+Drop files anywhere in `D:\GRC_V4\GRC` (or subdirectories). The local connector scans recursively and picks up all `.txt`, `.pdf`, `.csv`, `.log` files.
 
 ---
 
@@ -142,7 +142,7 @@ grc_platform/
 │   ├── main.py                   ← FastAPI app
 │   ├── connectors/
 │   │   ├── github_connector.py   ← GitHub API scraper
-│   │   └── local_connector.py    ← D:\Babcom\GRC scanner
+│   │   └── local_connector.py    ← D:\GRC_V4\GRC scanner
 │   ├── parsers/parsers.py        ← PDF/TXT/CSV/JSON
 │   ├── extractors/all_extractors.py
 │   ├── models/canonical.py

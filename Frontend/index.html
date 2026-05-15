@@ -166,11 +166,12 @@ const {useState,useEffect,useCallback,useRef} = React;
 //   - If window.GRC_API_URL is set (injected by server), use it
 //   - If deployed on same domain (e.g. via Nginx), use /api proxy path
 //   - Otherwise fall back to localhost:8000 for local dev
+const hostname = window.location.hostname;
 const API = (
   window.GRC_API_URL ||
-  (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-    ? ''          // same-origin: Nginx proxies /api/* to backend
-    : 'http://localhost:8000')
+  (hostname === '' || hostname === 'localhost' || hostname === '127.0.0.1'
+    ? 'http://localhost:8000'
+    : '')
 );
 const R = React.createElement;
 
@@ -345,7 +346,7 @@ function OnFlash({vis}){
 function RunPage({run,running,progress,err,online,wsLive}){
   const [cfg,setCfg]=useState({
     github_repo:'adarshray416/GRC',github_token:'',
-    local_path:'D:\\Babcom\\GRC',controls_frameworks:['ISO27001','SOC2','GDPR']
+    local_path:'D:\\GRC_V4\\GRC',controls_frameworks:['ISO27001','SOC2','GDPR']
   });
   const [uploads,setUploads] = useState([]);
   const [uploadMsg,setUploadMsg] = useState('');
@@ -391,7 +392,7 @@ function RunPage({run,running,progress,err,online,wsLive}){
       R('div',{className:'card'},
         R('div',{className:'stitle'},'Local Path'),
         R('div',{className:'fg'},R('label',{className:'fl'},'Evidence folder path'),
-          R('input',{className:'fi',value:cfg.local_path,placeholder:'D:\\Babcom\\GRC',
+          R('input',{className:'fi',value:cfg.local_path,placeholder:'D:\\GRC_V4\\GRC',
             onChange:e=>setCfg(c=>({...c,local_path:e.target.value}))}))
       ),
       R('div',{className:'card'},
@@ -652,7 +653,7 @@ function App(){
     R('nav',{className:'nav'},
       R('div',{className:'logo-img'},
       R('img',{
-        src:'/babcom.png',  
+        src:'../babcom.png',  
         alt:'BABCOM Logo',
         className:'logo-img'
       }),),
